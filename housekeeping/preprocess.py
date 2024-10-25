@@ -9,15 +9,15 @@ output_folder = "../data"
 
 
 def is_common( name):
-    return name in ["indian_pines", "salinas", "paviaU"]
+    return name in ["indian_pines.csv", "salinas.csv", "paviaU.csv"]
 
 
 def is_regression( name):
-    return name in ["lucas_r"]
+    return name in ["lucas_r.csv"]
 
 
 def is_special_classification( name):
-    return name in ["ghisaconus", "lucas_lc0_s_r", "lucas_texture_r"]
+    return name in ["ghisaconus.csv", "lucas_lc0_s_r.csv", "lucas_texture_r.csv"]
 
 
 os.makedirs(output_folder, exist_ok=True)

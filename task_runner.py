@@ -1,12 +1,10 @@
 import torch
-
 from ds_manager import DSManager
 from reporter import Reporter
 import pandas as pd
 from metrics import Metrics
 from algorithm import Algorithm
 import train_test_evaluator
-import numpy as np
 
 
 class TaskRunner:
@@ -23,7 +21,7 @@ class TaskRunner:
 
     def evaluate(self):
         for dataset_name in self.task["datasets"]:
-            dataset = DSManager(name=dataset_name, remove_bg=self.remove_bg, test=self.test)
+            dataset = DSManager(name=dataset_name)
             if not self.skip_all_bands:
                 self.evaluate_for_all_features(dataset)
             for algorithm in self.task["algorithms"]:

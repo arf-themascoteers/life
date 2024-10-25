@@ -1,0 +1,8 @@
+first clasification
+
+then add regression
+
+
+when adding regression
+==========================
+to calculate RMSE - use real scale data

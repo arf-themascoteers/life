@@ -23,7 +23,7 @@ class Reporter:
 
         if not os.path.exists(self.summary_file):
             with open(self.summary_file, 'w') as file:
-                file.write("dataset,target_size,algorithm,time,oa,aa,k,selected_features,selected_weights\n")
+                file.write("dataset,target_size,algorithm,time,oa,aa,k,selected_bands,selected_weights\n")
 
         if not os.path.exists(self.details_file):
             with open(self.details_file, 'w') as file:
@@ -59,15 +59,15 @@ class Reporter:
         oa = Reporter.sanitize_metric(metric.oa)
         aa = Reporter.sanitize_metric(metric.aa)
         k = Reporter.sanitize_metric(metric.k)
-        selected_features = np.array(metric.selected_features)
+        selected_bands = np.array(metric.selected_bands)
         selected_weights = np.array(metric.selected_weights)
-        indices = np.argsort(selected_features)
-        selected_features = selected_features[indices]
+        indices = np.argsort(selected_bands)
+        selected_bands = selected_bands[indices]
         selected_weights = selected_weights[indices]
         with open(self.summary_file, 'a') as file:
             file.write(f"{algorithm.dataset.get_name()},{algorithm.target_size},{algorithm.get_name()},"
                        f"{time},{oa},{aa},{k},"
-                       f"{'|'.join([str(i) for i in selected_features])},"
+                       f"{'|'.join([str(i) for i in selected_bands])},"
                        f"{'|'.join([str(i) for i in selected_weights])}\n")
 
         with open(self.details_file, 'a') as file:
@@ -113,7 +113,7 @@ class Reporter:
         if len(rows) == 0:
             return None
         row = rows.iloc[0]
-        return Metrics(row["time"], row["oa"], row["aa"], row["k"], row["selected_features"], row["selected_weights"])
+        return Metrics(row["time"], row["oa"], row["aa"], row["k"], row["selected_bands"], row["selected_weights"])
 
     def save_results(self):
         os.makedirs(self.save_dir, exist_ok=True)
