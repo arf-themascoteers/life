@@ -22,6 +22,15 @@ class DSManager:
     def get_bs_train_data(self):
         return self.data
 
+    def get_train_x_y(self):
+        return self.get_train_x(), self.get_train_y()
+
+    def get_train_x(self):
+        return self.data[:,0:-1]
+
+    def get_train_y(self):
+        return self.data[:, -1]
+
     def __repr__(self):
         return self.get_name()
 
