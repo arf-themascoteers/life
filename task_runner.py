@@ -19,7 +19,7 @@ class TaskRunner:
         self.test = test
         self.tag = tag
         self.reporter = Reporter(self.tag, self.skip_all_bands)
-        self.cache = pd.DataFrame(columns=["dataset","algorithm","cache_tag","oa","aa","k","time","selected_features","selected_weights"])
+        self.cache = pd.DataFrame(columns=["dataset","algorithm","cache_tag","oa","aa","k","time","selected_bands","selected_weights"])
 
     def evaluate(self):
         for dataset_name in self.task["datasets"]:
@@ -51,7 +51,7 @@ class TaskRunner:
                   f"for size {algorithm.target_size} "
                   f"for {algorithm.get_name()} "
                   f"for cache_tag {algorithm.get_cache_tag()}")
-            algorithm.set_selected_indices(metric.selected_features)
+            algorithm.set_selected_indices(metric.selected_bands)
             algorithm.set_weights(metric.selected_weights)
             return algorithm.compute_performance()
         print(f"NOT FOUND in cache for {algorithm.dataset.get_name()} "
@@ -70,7 +70,7 @@ class TaskRunner:
             "algorithm": algorithm.get_name(),
             "cache_tag": algorithm.get_cache_tag(),
             "time":metric.time,"oa":metric.oa,"aa":metric.aa,"k":metric.k,
-            "selected_features":algorithm.get_all_indices(),
+            "selected_bands":algorithm.get_all_indices(),
             "selected_weights":algorithm.get_weights()
         }
 
@@ -87,9 +87,9 @@ class TaskRunner:
         if len(rows) == 0:
             return None
         row = rows.iloc[0]
-        selected_features = row["selected_features"][0:algorithm.target_size]
+        selected_bands = row["selected_bands"][0:algorithm.target_size]
         selected_weights = row["selected_weights"][0:algorithm.target_size]
-        return Metrics(row["time"], row["oa"],row["aa"], row["k"], selected_features, selected_weights)
+        return Metrics(row["time"], row["oa"],row["aa"], row["k"], selected_bands, selected_weights)
 
     def evaluate_for_all_features(self, dataset):
         for fold, (train_x, test_x, train_y, test_y) in enumerate(dataset.get_k_folds()):
