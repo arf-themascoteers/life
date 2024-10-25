@@ -11,6 +11,8 @@ class Algorithm_random(Algorithm):
     def get_selected_indices(self):
         original_size = self.dataset.get_train_x().shape[1]
         self.indices = torch.randperm(original_size)[:self.target_size].sort().values.tolist()
+        self.set_selected_indices(self.indices)
+        self.set_weights([1]*self.target_size)
         return self, self.indices
 
     def transform(self, X):
