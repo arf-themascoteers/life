@@ -1,5 +1,4 @@
 from algorithm import Algorithm
-import linspacer
 import torch
 
 
@@ -10,7 +9,7 @@ class Algorithm_linspacer(Algorithm):
 
     def get_selected_indices(self):
         original_size = self.dataset.get_train_x().shape[1]
-        indices = linspacer.get_points(0, original_size-1, self.target_size,1)
+        indices = self.get_points(0, original_size-1, self.target_size,1)
         self.indices = torch.round(indices).long().tolist()
         return self, self.indices
 
@@ -19,3 +18,20 @@ class Algorithm_linspacer(Algorithm):
 
     def is_cacheable(self):
         return False
+
+    def get_points(self, low, up, target_size, group_size):
+        if group_size == 1:
+            split = (up - low) / (2 * target_size)
+            start = low + split
+            end = up - split
+            return torch.linspace(start, end, target_size)
+
+        anchors = torch.linspace(low, up, target_size + 1)
+        all_points = []
+        for i in range(target_size):
+            points = torch.linspace(anchors[i], anchors[i + 1], group_size)
+            for p in points:
+                all_points.append(p)
+
+        all_points = torch.stack(all_points)
+        return all_points
