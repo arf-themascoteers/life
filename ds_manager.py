@@ -15,20 +15,6 @@ class DSManager:
             frac = 1
         df = df.sample(frac=frac).reset_index(drop=True)
         self.data = df.to_numpy()
-        if name == "lucas_texture_4_r":
-            X = self.data[:, :-1]
-            y = self.data[:, -1]
-            rus = RandomUnderSampler(sampling_strategy={0: 173, 1: 173, 2: 173, 3: 173})
-            X_resampled, y_resampled = rus.fit_resample(X, y)
-            self.data = np.column_stack((X_resampled, y_resampled))
-            print(len(self.data))
-        if name == "lucas_lc0_s_r":
-            X = self.data[:, :-1]
-            y = self.data[:, -1]
-            rus = RandomUnderSampler(sampling_strategy={0: 599, 1: 599, 2: 599, 3: 599, 4:599})
-            X_resampled, y_resampled = rus.fit_resample(X, y)
-            self.data = np.column_stack((X_resampled, y_resampled))
-            print(len(self.data))
 
     def is_classification(self):
         if self.name == "lucas_r":
