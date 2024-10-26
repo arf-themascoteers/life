@@ -85,7 +85,10 @@ class Algorithm_bsdr(Algorithm):
         self.original_feature_size = self.dataset.get_train_x().shape[1]
         self.total_epoch = 500
         self.X_train = torch.tensor(self.dataset.get_train_x(), dtype=torch.float32).to(self.device)
-        self.y_train = torch.tensor(self.dataset.get_train_y(), dtype=torch.int32).to(self.device)
+        ytype = torch.float32
+        if dataset.is_classification():
+            ytype = torch.int32
+        self.y_train = torch.tensor(self.dataset.get_train_y(), dtype=ytype).to(self.device)
 
     def get_selected_indices(self):
         self.ann.train()
