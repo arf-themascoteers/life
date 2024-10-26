@@ -56,3 +56,6 @@ multi
 reasoning
 plots
 plots for loss etc
+
+=====================
+lucas -> bsdr shortlist -> run 1d-cnn
