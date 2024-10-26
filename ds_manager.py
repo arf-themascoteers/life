@@ -30,7 +30,10 @@ class DSManager:
             self.data = np.column_stack((X_resampled, y_resampled))
             print(len(self.data))
 
-
+    def is_classification(self):
+        if self.name == "lucas_r":
+            return False
+        return True
 
     def get_name(self):
         return self.name
@@ -44,7 +47,9 @@ class DSManager:
             yield self.get_a_fold(seed)
 
     def get_a_fold(self, seed=50):
-        return train_test_split(self.data[:,0:-1], self.data[:,-1], test_size=0.95, random_state=seed, stratify=self.data[:, -1])
+        if self.is_classification():
+            return train_test_split(self.data[:,0:-1], self.data[:,-1], test_size=0.95, random_state=seed, stratify=self.data[:, -1])
+        return train_test_split(self.data[:, 0:-1], self.data[:, -1], test_size=0.95, random_state=seed)
 
     def get_bs_train_data(self):
         return self.data
