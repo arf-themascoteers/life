@@ -38,3 +38,6 @@ cubic spline
 relu instead of sigmoid
 l1 l2?
 mso
+---------------
+
+4 types of lucas texture
