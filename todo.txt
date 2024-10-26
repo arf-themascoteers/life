@@ -40,4 +40,4 @@ l1 l2?
 mso
 ---------------
 
-4 types of lucas texture
+4 types of lucas texture - https://www.sciencedirect.com/science/article/pii/S0016706121004468
