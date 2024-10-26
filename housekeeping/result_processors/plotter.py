@@ -109,9 +109,9 @@ def plot_combined(sources=None,exclude=None):
     dest = os.path.join(graphics_folder, dest)
     df = accumulate_results.accumulate_results(sources,excluded=exclude)
     datasets = df["dataset"].unique()
-    fig, axes = plt.subplots(nrows=len(datasets), ncols=3, figsize=(18,6))
+    fig, axes = plt.subplots(nrows=len(datasets), ncols=3, figsize=(18,36))
     for dataset_index, dataset in enumerate(datasets):
-        ddf = df[df["dataset"] == dataset]
+        ddf = df[df["dataset"] == dataset].copy()
         if len(ddf) == 0:
             continue
 
