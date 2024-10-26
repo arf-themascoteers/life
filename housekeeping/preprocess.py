@@ -17,12 +17,12 @@ def is_regression( name):
 
 
 def is_special_classification( name):
-    return name in ["ghisaconus.csv", "lucas_lc0_s_r.csv", "lucas_texture_r.csv"]
+    return name in ["ghisaconus.csv", "lucas_lc0_s_r.csv", "lucas_texture_r.csv", "lucas_texture_4_r.csv"]
 
 
 os.makedirs(output_folder, exist_ok=True)
 
-for file in os.listdir(source_folder):
+for file in ["lucas_texture_4_r.csv"]:#os.listdir(source_folder):
     path = os.path.join(source_folder, file)
     df = pd.read_csv(path)
 
