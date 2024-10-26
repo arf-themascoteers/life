@@ -119,11 +119,15 @@ class Algorithm_bsdrattn(Algorithm):
         self.verbose = verbose
         self.target_size = target_size
         self.shortlist = self.target_size*3
-        self.class_size = len(np.unique(self.dataset.get_train_y()))
+        if dataset.is_classification():
+            self.criterion = torch.nn.CrossEntropyLoss()
+            self.class_size = len(np.unique(self.dataset.get_train_y()))
+        else:
+            self.criterion = torch.nn.MSELoss()
+            self.class_size = 1
         self.lr = 0.001
         self.ann = ANN(dataset.get_name(), self.target_size, self.class_size, self.shortlist)
         self.ann.to(self.device)
-        self.criterion = torch.nn.CrossEntropyLoss()
         self.original_feature_size = self.dataset.get_train_x().shape[1]
         self.total_epoch = 500
         self.X_train = torch.tensor(self.dataset.get_train_x(), dtype=torch.float32).to(self.device)
@@ -150,7 +154,8 @@ class Algorithm_bsdrattn(Algorithm):
             self.set_all_indices(all_bands)
             self.set_selected_indices(selected_bands)
             self.set_weights(mean_weight)
-
+            if not self.dataset.is_classification():
+                y_hat = y_hat.reshape(-1)
             mse_loss = self.criterion(y_hat, y)
             l1_loss = self.l1_loss(channel_weights)
             lambda_value = self.get_lambda(l0_norm)
