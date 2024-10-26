@@ -17,7 +17,10 @@ class DSManager:
         folds = 20
         for i in range(folds):
             seed = 40 + i
-            yield train_test_split(self.data[:,0:-1], self.data[:,-1], test_size=0.95, random_state=seed, stratify=self.data[:, -1])
+            yield self.get_a_fold(seed)
+
+    def get_a_fold(self, seed=50):
+        return train_test_split(self.data[:,0:-1], self.data[:,-1], test_size=0.95, random_state=seed, stratify=self.data[:, -1])
 
     def get_bs_train_data(self):
         return self.data

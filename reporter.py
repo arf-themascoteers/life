@@ -186,6 +186,19 @@ class Reporter:
                        f"{Reporter.sanitize_weight(min_s)},{Reporter.sanitize_weight(max_s)},{Reporter.sanitize_weight(avg_s)},"
                        f"{selected_bands_str},{selected_weights_str},{weights}\n")
 
+    def report_epoch_bsdr(self, epoch, mse_loss,oa,aa,k,selected_bands):
+        if not os.path.exists(self.current_epoch_report_file):
+            with open(self.current_epoch_report_file, 'w') as file:
+                columns = ["epoch","loss","oa","aa","k"] + [f"band_{index+1}" for index in range(len(selected_bands))]
+                file.write(",".join(columns)+"\n")
+
+        with open(self.current_epoch_report_file, 'a') as file:
+            file.write(f"{epoch},"
+                       f"{Reporter.sanitize_metric(mse_loss)},"
+                       f"{Reporter.sanitize_metric(oa)},{Reporter.sanitize_metric(aa)},{Reporter.sanitize_metric(k)},"
+                       f"{','.join(selected_bands)}\n"
+                       )
+
     def report_weight(self, epoch, weights):
         if not os.path.exists(self.current_weight_report_file):
             with open(self.current_weight_report_file, 'w') as file:

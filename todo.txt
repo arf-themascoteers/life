@@ -1,3 +1,5 @@
+bsdr oa aa k
+
 first clasification
 
 then add regression
@@ -6,3 +8,22 @@ then add regression
 when adding regression
 ==========================
 to calculate RMSE - use real scale data
+
+use of tag - refractor?
+
+1. classification
+2. regression
+3. bsdr
+4. multi
+5. loss
+6. diff datasets
+7. analyze results - explanation
+
+bsdr modific
+-distance increase
+variance? inverse l2?
+
+meeting
+=========
+1. loss curve
+2. loss equation (chain rule) - partial derivative
