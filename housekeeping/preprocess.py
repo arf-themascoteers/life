@@ -22,7 +22,7 @@ def is_special_classification( name):
 
 os.makedirs(output_folder, exist_ok=True)
 
-for file in ["lucas_texture_4_r.csv"]:#os.listdir(source_folder):
+for file in os.listdir(source_folder):
     path = os.path.join(source_folder, file)
     df = pd.read_csv(path)
 
