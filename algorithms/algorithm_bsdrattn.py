@@ -181,7 +181,7 @@ class Algorithm_bsdrattn(Algorithm):
             return
 
         oa, aa, k = evaluate_split(*self.dataset.get_a_fold(), self)
-        self.reporter.report_epoch_bsdr(epoch, loss, oa, aa, k, bands)
+        self.reporter.report_epoch_bsdr(epoch, loss, oa, aa, k, self.selected_indices)
         cells = [epoch, loss, oa, aa, k] + self.selected_indices
         cells = [round(item, 5) if isinstance(item, float) else item for item in cells]
         print("".join([str(i).ljust(20) for i in cells]))
