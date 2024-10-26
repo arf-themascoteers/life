@@ -75,10 +75,10 @@ def plot_algorithm(ax, algorithm, algorithm_index, metric, alg_df):
                                      fillstyle='none', markersize=7, linewidth=2, linestyle=linestyle)
 
 
-def plot_metric(include, metric, metric_index, dataset_index, dataset, ddf, ax):
+def plot_metric(algorithms, metric, metric_index, dataset_index, dataset, ddf, ax):
     min_lim = min(ddf["oa"].min(), ddf["aa"].min(), ddf["k"].min()) - 0.02
     max_lim = max(ddf["oa"].max(), ddf["aa"].max(), ddf["k"].max()) + 0.02
-    for algorithm_index, algorithm in enumerate(include):
+    for algorithm_index, algorithm in enumerate(algorithms):
         alg_df = ddf[ddf["algorithm"] == algorithm]
         plot_algorithm(ax, algorithm, algorithm_index, metric, alg_df)
 
@@ -100,7 +100,7 @@ def plot_metric(include, metric, metric_index, dataset_index, dataset, ddf, ax):
         ax.set_title(DSS[dataset], fontsize=20)
 
 
-def plot_combined(sources=None,exclude=None):
+def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=None):
     if exclude is None:
         exclude = []
     if sources is None:
@@ -111,6 +111,8 @@ def plot_combined(sources=None,exclude=None):
     dest = os.path.join(graphics_folder, dest)
     df = accumulate_results.accumulate_results(sources,excluded=exclude)
     datasets = df["dataset"].unique()
+    if only_datasets is not None:
+        datasets = [d for d in datasets if d in only_datasets]
     fig, axes = plt.subplots(nrows=len(datasets), ncols=3, figsize=(18,36))
     for dataset_index, dataset in enumerate(datasets):
         ddf = df[df["dataset"] == dataset].copy()
@@ -121,8 +123,9 @@ def plot_combined(sources=None,exclude=None):
         ddf = ddf.sort_values("sort_order").drop(columns=["sort_order"])
 
         algorithms = ddf["algorithm"].unique()
-        include = [x for x in algorithms if x not in exclude]
-        if len(include) == 0:
+        if only_algorithms is not None:
+            algorithms = [a for a in algorithms if a in only_algorithms]
+        if len(algorithms) == 0:
             continue
 
         for metric_index, metric in enumerate(["oa", "aa", "k"]):
@@ -130,7 +133,7 @@ def plot_combined(sources=None,exclude=None):
                 ax = axes[metric_index]
             else:
                 ax = axes[dataset_index, metric_index]
-            plot_metric(include, metric, metric_index, dataset_index, dataset, ddf, ax)
+            plot_metric(algorithms, metric, metric_index, dataset_index, dataset, ddf, ax)
 
     #fig.tight_layout()
     #fig.subplots_adjust(wspace=0.3, hspace=0.5, top=0.95, bottom=0.15)
