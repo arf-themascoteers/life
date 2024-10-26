@@ -138,7 +138,10 @@ class Algorithm_bsdrattn(Algorithm):
         self.write_columns()
         optimizer = torch.optim.Adam(self.ann.parameters(), lr=self.lr, weight_decay=self.lr/10)
         linterp = LinearInterpolationModule(self.X_train, self.device)
-        y = self.y_train.type(torch.LongTensor).to(self.device)
+        if self.dataset.is_classification():
+            y = self.y_train.type(torch.LongTensor).to(self.device)
+        else:
+            y = self.y_train
         l0_norm = self.shortlist
         sparse_weights = None
         for epoch in range(self.total_epoch):

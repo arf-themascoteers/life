@@ -4,7 +4,7 @@ if __name__ == '__main__':
     tag = "r1"
     tasks = {
         #"algorithms" : ["random", "linspacer", "pcal", "mcuve", "bsnet", "bnc", "c1", "bsdr"],
-        "algorithms" : ["bnc"],
+        "algorithms" : ["bnc", "c1", "bsdr", "bsdrattn"],
         "datasets": ["lucas_r"],
         "target_sizes" : [5,10,15,20,25,30]
     }
