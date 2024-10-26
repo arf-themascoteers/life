@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 
 df = pd.read_csv("../../data/lucas_texture_4_r.csv")
@@ -7,5 +8,6 @@ print(unique_values_with_counts)
 distinct_count = df['texture'].nunique()
 print(distinct_count)
 print(len(df))
-print(df.iloc[:,:-1].min())
-print(df.iloc[:,:-1].max())
+data = df.iloc[:,:-1].to_numpy()
+print(np.min(data))
+print(np.max(data))
