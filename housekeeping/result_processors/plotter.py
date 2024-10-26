@@ -142,4 +142,4 @@ def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=N
 
 
 if __name__ == "__main__":
-    plot_combined(sources=["bsdr","bs","bsdrattn"], only_algorithms=["bsdr","bsdrattn","c1"], only_datasets=["indian_pines"])
+    plot_combined(sources=["bsdr","bsdrattn"], only_algorithms=["bsdr","bsdrattn","c1"], only_datasets=["indian_pines"])

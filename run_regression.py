@@ -1,9 +1,10 @@
 from task_runner import TaskRunner
 
 if __name__ == '__main__':
-    tag = "complete"
+    tag = "r1"
     tasks = {
-        "algorithms" : ["random", "linspacer", "pcal", "mcuve", "bsnet", "bnc", "c1", "bsdr"],
+        #"algorithms" : ["random", "linspacer", "pcal", "mcuve", "bsnet", "bnc", "c1", "bsdr"],
+        "algorithms" : ["bnc"],
         "datasets": ["lucas_r"],
         "target_sizes" : [5,10,15,20,25,30]
     }

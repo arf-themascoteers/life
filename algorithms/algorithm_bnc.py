@@ -61,8 +61,14 @@ class ZhangNet(nn.Module):
 class Algorithm_bnc(Algorithm):
     def __init__(self, target_size:int, dataset, tag, reporter, verbose, test):
         super().__init__(target_size, dataset, tag, reporter, verbose, test)
-        self.criterion = torch.nn.CrossEntropyLoss()
-        self.class_size = len(np.unique(self.dataset.get_train_y()))
+
+        if dataset.is_classification():
+            self.criterion = torch.nn.CrossEntropyLoss()
+            self.class_size = len(np.unique(self.dataset.get_train_y()))
+        else:
+            self.criterion = torch.nn.MSELoss()
+            self.class_size = 1
+
         self.last_layer_input = 100
         if self.dataset.name == "paviaU":
             self.last_layer_input = 48
@@ -97,6 +103,8 @@ class Algorithm_bnc(Algorithm):
                 self.set_weights(mean_weight)
 
                 y = y.type(torch.LongTensor).to(self.device)
+                if not self.dataset.is_classification():
+                    y_hat = y_hat.reshape(-1)
                 mse_loss = self.criterion(y_hat, y)
                 l1_loss = self.l1_loss(channel_weights)
                 lambda_value = self.get_lambda(epoch+1)
