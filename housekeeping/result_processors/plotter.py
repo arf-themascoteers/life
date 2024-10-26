@@ -13,6 +13,7 @@ ALGS = {
     "bsnet": "BS-Net-FC [2]",
     "pcal": "PCAL [16]",
     "bsdr": "BSDR",
+    "bsdrattn": "BSDR-ATTN",
     "linspacer": "Linearly Spaced",
     "random": "Randomly Selected",
 }
@@ -35,6 +36,7 @@ FIXED_ALG_COLORS = {
     "bsnet": "#008000",
     "pcal": "#9467bd",
     "bsdr": "#7FFF00",
+    "bsdrattn": "#7F0000",
     "linspacer": "#FF00FF",
     "random": "#d6ff28",
 }
@@ -42,7 +44,7 @@ FIXED_ALG_COLORS = {
 ARBITRARY_ALG_COLORS = ["#000000","#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"]
 MARKERS = ['s', 'P', 'D', '^', 'o', '*', '.', 's', 'P', 'D', '^', 'o', '*', '.']
 METRIC_LABELS = ["OA", "AA", r"$\kappa$"]
-ALG_ORDERS = ["all", "random", "linspacer", "pcal", "mcuve", "bsnet", "bnc", "c1", "bsdr"]
+ALG_ORDERS = ["all", "random", "linspacer", "pcal", "mcuve", "bsnet", "bnc", "c1", "bsdr","bsdrattn"]
 
 
 def plot_algorithm(ax, algorithm, algorithm_index, metric, alg_df):
@@ -137,4 +139,4 @@ def plot_combined(sources=None,exclude=None):
 
 
 if __name__ == "__main__":
-    plot_combined()
+    plot_combined(sources=["bsdr","bs","bsdrattn"])
