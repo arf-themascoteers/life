@@ -31,4 +31,10 @@ meeting
 
 linear -> cubic spline
 
-*************set selected indices
+****
+result accumulator
+mso
+cubic spline
+relu instead of sigmoid
+l1 l2?
+mso
