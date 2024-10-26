@@ -10,7 +10,7 @@ class DSManager:
         df = pd.read_csv(dataset_path)
         frac = 1
         if self.test:
-            frac = 0.5
+            frac = 1
         df = df.sample(frac=frac).reset_index(drop=True)
         self.data = df.to_numpy()
 
@@ -19,6 +19,8 @@ class DSManager:
 
     def get_k_folds(self):
         folds = 20
+        if self.test:
+            folds = 5
         for i in range(folds):
             seed = 40 + i
             yield self.get_a_fold(seed)
