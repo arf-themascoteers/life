@@ -2,7 +2,9 @@ import pandas as pd
 import os
 
 
-def accumulate_results(sources, dest, excluded = None):
+def accumulate_results(sources, dest=None, excluded = None):
+    if dest is None:
+        dest = "dummy.csv"
     if excluded is None:
         excluded = []
     source_folder = "../../saved_results"
@@ -32,6 +34,7 @@ def accumulate_results(sources, dest, excluded = None):
         }
     ).reset_index()
     result_df.to_csv(dest, index=False)
+    return result_df
 
 
 def sanitize_df(df):
