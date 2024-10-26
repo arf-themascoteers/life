@@ -21,16 +21,16 @@ def accumulate_results(sources, dest, excluded = None):
     df = [sanitize_df(pd.read_csv(loc)) for loc in summaries]
     df = [d for d in df if len(d) != 0]
     df = pd.concat(df, axis=0, ignore_index=True)
-    result_df = df.groupby(["dataset","target_size","algorithm"], as_index=False).agg(
+    result_df = df.groupby(["dataset","target_size","algorithm"]).agg(
         {
             'time': 'mean',
             'oa': 'mean',
             'aa': 'mean',
             'k': 'mean',
-            'selected_bands': lambda x: '---'.join(x),
-            'selected_weights': lambda x: '---'.join(x)
+            'selected_bands': lambda x: "---".join(x),
+            'selected_weights': lambda x: "---".join(x)
         }
-    )
+    ).reset_index()
     result_df.to_csv(dest, index=False)
 
 
@@ -39,6 +39,10 @@ def sanitize_df(df):
         df['target_size'] = 0
         df['algorithm'] = 'all'
         df['time'] = 0
-        df['selected_features'] = ''
+        df['selected_bands'] = ''
         df['selected_weights'] = ''
     return df
+
+
+if __name__ == "__main__":
+    accumulate_results(["1","2"],"test.csv")
