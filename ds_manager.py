@@ -8,7 +8,7 @@ class DSManager:
         self.test = test
         dataset_path = f"data/{name}.csv"
         df = pd.read_csv(dataset_path)
-        frac = 0.001
+        frac = 1
         if self.test:
             frac = 1
         df = df.sample(frac=frac).reset_index(drop=True)
