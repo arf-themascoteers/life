@@ -96,16 +96,17 @@ class ANN(nn.Module):
         return -torch.log(1.0 / x - 1.0)
 
     def forward(self, linterp, epoch, l0_norm):
-        outputs = linterp(self.get_indices())
+        sig_indices = self.get_ann_indices()
+        outputs = linterp(sig_indices)
         channel_weights = self.weighter(outputs)
         channel_weights = torch.abs(channel_weights)
         channel_weights = torch.mean(channel_weights, dim=0)
         sparse_weights = self.sparse(channel_weights, epoch, l0_norm)
         reweight_out = outputs * sparse_weights
         output = self.classnet(reweight_out)
-        return channel_weights, sparse_weights, output
+        return channel_weights, sparse_weights, sig_indices, output
 
-    def get_indices(self):
+    def get_ann_indices(self):
         return torch.sigmoid(self.indices)
 
 
@@ -142,9 +143,8 @@ class Algorithm_bsdrattn(Algorithm):
                 l0_norm = 40
             else:
                 l0_norm = torch.norm(sparse_weights, p=0).item()
-            channel_weights, sparse_weights, y_hat = self.ann(linterp, epoch, l0_norm)
-            deciding_weights = channel_weights
-            mean_weight, all_bands, selected_bands = self.get_weights_indices(deciding_weights)
+            channel_weights, sparse_weights, sig_indices, y_hat = self.ann(linterp, epoch, l0_norm)
+            mean_weight, all_bands, selected_bands = self.get_weights_indices(channel_weights, sig_indices)
 
             self.set_all_indices(all_bands)
             self.set_selected_indices(selected_bands)
@@ -159,25 +159,19 @@ class Algorithm_bsdrattn(Algorithm):
             optimizer.step()
             self.report(epoch, loss.item())
 
-        return self, self.get_indices()
+        return self, self.selected_indices
 
-    def get_weights_indices(self, deciding_weights):
-        mean_weights = deciding_weights
-        if len(mean_weights.shape) > 1:
-            mean_weights = torch.mean(mean_weights, dim=0)
-
-        corrected_weights = mean_weights
-        if torch.any(corrected_weights < 0):
-            corrected_weights = torch.abs(corrected_weights)
-
-        band_indx = (torch.argsort(corrected_weights, descending=True)).tolist()
-        return mean_weights, band_indx, band_indx[: self.target_size]
+    def get_weights_indices(self, channel_weights, sig_indices):
+        top_indices = (torch.argsort(channel_weights, descending=True)).tolist()
+        top_band_indices = sig_indices[top_indices]
+        top_band_indices = torch.round(top_band_indices * self.original_feature_size).to(torch.int64).tolist()
+        top_band_indices = list(dict.fromkeys(top_band_indices))
+        return channel_weights, top_band_indices, top_band_indices[: self.target_size]
 
     def write_columns(self):
         if not self.verbose:
             return
-        selected_bands = self.get_indices()
-        columns = ["epoch","loss","oa","aa","k"] + [f"band_{index+1}" for index in range(len(selected_bands))]
+        columns = ["epoch","loss","oa","aa","k"] + [f"band_{index+1}" for index in range(self.target_size)]
         print("".join([str(i).ljust(20) for i in columns]))
 
     def report(self, epoch, loss):
@@ -187,18 +181,10 @@ class Algorithm_bsdrattn(Algorithm):
             return
 
         oa, aa, k = evaluate_split(*self.dataset.get_a_fold(), self)
-        bands = self.get_indices()
         self.reporter.report_epoch_bsdr(epoch, loss, oa, aa, k, bands)
-        cells = [epoch, loss, oa, aa, k] + bands
+        cells = [epoch, loss, oa, aa, k] + self.selected_indices
         cells = [round(item, 5) if isinstance(item, float) else item for item in cells]
         print("".join([str(i).ljust(20) for i in cells]))
-
-    def get_indices(self):
-        indices = torch.round(self.ann.get_indices() * self.original_feature_size ).to(torch.int64).tolist()
-        return list(dict.fromkeys(indices))
-
-    def transform(self, X):
-        return X[:,self.get_indices()]
 
     def is_cacheable(self):
         return False

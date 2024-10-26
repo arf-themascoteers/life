@@ -41,3 +41,13 @@ mso
 ---------------
 
 4 types of lucas texture - https://www.sciencedirect.com/science/article/pii/S0016706121004468
+===================
+
+regression
+sigmoid -> relu
+bsdr attn
+with without dsc etc
+multi
+reasoning
+plots
+plots for loss etc
