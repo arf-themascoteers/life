@@ -36,7 +36,7 @@ FIXED_ALG_COLORS = {
     "pcal": "#9467bd",
     "bsdr": "#7FFF00",
     "linspacer": "#FF00FF",
-    "random": "#d62728",
+    "random": "#d6ff28",
 }
 
 ARBITRARY_ALG_COLORS = ["#000000","#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"]
@@ -87,9 +87,10 @@ def plot_metric(include, metric, metric_index, dataset_index, dataset, ddf, ax):
     ax.grid(True, linestyle='-', alpha=0.6)
 
     if metric_index == 0 and dataset_index == 0:
-        legend = ax.legend(loc='upper left', fontsize=12, ncols=6,
-                           bbox_to_anchor=(0, 1.35),
-                           columnspacing=3.8, frameon=True)
+        # legend = ax.legend(loc='upper left', fontsize=12, ncols=6,
+        #                    bbox_to_anchor=(0, 1.35),
+        #                    columnspacing=3.8, frameon=True)
+        legend = ax.legend(loc='upper left', ncols=5,bbox_to_anchor=(0, 1.3))
         legend.get_title().set_fontsize('12')
         legend.get_title().set_fontweight('bold')
 
@@ -108,7 +109,7 @@ def plot_combined(sources=None,exclude=None):
     dest = os.path.join(graphics_folder, dest)
     df = accumulate_results.accumulate_results(sources,excluded=exclude)
     datasets = df["dataset"].unique()
-    fig, axes = plt.subplots(nrows=len(datasets), ncols=3)
+    fig, axes = plt.subplots(nrows=len(datasets), ncols=3, figsize=(18,6))
     for dataset_index, dataset in enumerate(datasets):
         ddf = df[df["dataset"] == dataset]
         if len(ddf) == 0:
@@ -129,8 +130,8 @@ def plot_combined(sources=None,exclude=None):
                 ax = axes[dataset_index, metric_index]
             plot_metric(include, metric, metric_index, dataset_index, dataset, ddf, ax)
 
-    fig.tight_layout()
-    fig.subplots_adjust(wspace=0.3, hspace=0.5, top=0.95, bottom=0.15)
+    #fig.tight_layout()
+    #fig.subplots_adjust(wspace=0.3, hspace=0.5, top=0.95, bottom=0.15)
     plt.savefig(dest, bbox_inches='tight', pad_inches=0.05)
     plt.close(fig)
 
