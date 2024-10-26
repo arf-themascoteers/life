@@ -113,7 +113,7 @@ def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=N
     datasets = df["dataset"].unique()
     if only_datasets is not None:
         datasets = [d for d in datasets if d in only_datasets]
-    fig, axes = plt.subplots(nrows=len(datasets), ncols=3, figsize=(18,36))
+    fig, axes = plt.subplots(nrows=len(datasets), ncols=3, figsize=(18,6*len(datasets)))
     for dataset_index, dataset in enumerate(datasets):
         ddf = df[df["dataset"] == dataset].copy()
         if len(ddf) == 0:
@@ -142,4 +142,4 @@ def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=N
 
 
 if __name__ == "__main__":
-    plot_combined(sources=["bsdr","bs","bsdrattn"])
+    plot_combined(sources=["bsdr","bs","bsdrattn"], only_algorithms=["bsdr","bsdrattn","c1"], only_datasets=["indian_pines"])
