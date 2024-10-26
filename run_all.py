@@ -1,7 +1,7 @@
 from task_runner import TaskRunner
 
 if __name__ == '__main__':
-    tag = "tex4"
+    tag = "complete"
     tasks = {
         "algorithms" : ["random", "linspacer", "pcal", "mcuve", "bsnet", "bnc", "c1", "bsdr"],
         "datasets": ["indian_pines","paviaU.csv","salinas.csv","ghisaconus","lucas_lc0_s_r","lucas_texture_4_r.csv"],
