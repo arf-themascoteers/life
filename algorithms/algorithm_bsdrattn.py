@@ -62,9 +62,10 @@ class Sparse(nn.Module):
 
 
 class ANN(nn.Module):
-    def __init__(self, target_size, class_size):
+    def __init__(self, dataset, target_size, class_size):
         super().__init__()
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.dataset = dataset
         self.target_size = target_size
         self.class_size = class_size
         self.shortlist = 40
@@ -84,7 +85,7 @@ class ANN(nn.Module):
             nn.Linear(300, 200),
             nn.ReLU(),
             nn.BatchNorm1d(200),
-            nn.Linear(200, self.number_of_classes),
+            nn.Linear(200, self.class_size),
         )
         self.sparse = Sparse(self.dataset)
         num_params = sum(p.numel() for p in self.parameters() if p.requires_grad)
@@ -119,7 +120,7 @@ class Algorithm_bsdrattn(Algorithm):
         self.target_size = target_size
         self.class_size = len(np.unique(self.dataset.get_train_y()))
         self.lr = 0.001
-        self.ann = ANN(self.target_size, self.class_size)
+        self.ann = ANN(dataset.get_name(), self.target_size, self.class_size)
         self.ann.to(self.device)
         self.criterion = torch.nn.CrossEntropyLoss()
         self.original_feature_size = self.dataset.get_train_x().shape[1]
