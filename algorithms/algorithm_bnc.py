@@ -66,7 +66,7 @@ class Algorithm_bnc(Algorithm):
         self.last_layer_input = 100
         if self.dataset.name == "paviaU":
             self.last_layer_input = 48
-        if self.dataset.name == "lucas_texture_4_r":
+        if self.dataset.name == "lucas_texture_4_r" or self.dataset.name == "lucas_lc0_s_r":
             self.last_layer_input = 2100
         if self.dataset.name == "ghisaconus":
             self.last_layer_input = 64
