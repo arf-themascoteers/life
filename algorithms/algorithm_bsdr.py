@@ -96,6 +96,8 @@ class Algorithm_bsdr(Algorithm):
             loss.backward()
             optimizer.step()
             self.report(epoch, loss.item())
+        self.set_selected_indices(self.get_indices())
+        self.set_weights([1]*self.target_size)
         return self, self.get_indices()
 
     def write_columns(self):
@@ -124,3 +126,6 @@ class Algorithm_bsdr(Algorithm):
 
     def transform(self, X):
         return X[:,self.get_indices()]
+
+    def is_cacheable(self):
+        return False
