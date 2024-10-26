@@ -73,11 +73,15 @@ class Algorithm_bsdr(Algorithm):
         torch.backends.cudnn.deterministic = True
         self.verbose = verbose
         self.target_size = target_size
-        self.class_size = len(np.unique(self.dataset.get_train_y()))
+        if dataset.is_classification():
+            self.criterion = torch.nn.CrossEntropyLoss()
+            self.class_size = len(np.unique(self.dataset.get_train_y()))
+        else:
+            self.criterion = torch.nn.MSELoss()
+            self.class_size = 1
         self.lr = 0.001
         self.ann = ANN(self.target_size, self.class_size)
         self.ann.to(self.device)
-        self.criterion = torch.nn.CrossEntropyLoss()
         self.original_feature_size = self.dataset.get_train_x().shape[1]
         self.total_epoch = 500
         self.X_train = torch.tensor(self.dataset.get_train_x(), dtype=torch.float32).to(self.device)
@@ -92,6 +96,8 @@ class Algorithm_bsdr(Algorithm):
         for epoch in range(self.total_epoch):
             optimizer.zero_grad()
             y_hat = self.ann(linterp)
+            if not self.dataset.is_classification():
+                y_hat = y_hat.reshape(-1)
             loss = self.criterion(y_hat, y)
             loss.backward()
             optimizer.step()
