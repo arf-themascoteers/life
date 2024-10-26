@@ -68,6 +68,8 @@ class Algorithm_bnc(Algorithm):
             self.last_layer_input = 48
         if self.dataset.name == "lucas_texture_4_r":
             self.last_layer_input = 2100
+        if self.dataset.name == "ghisaconus":
+            self.last_layer_input = 64
         self.zhangnet = ZhangNet(self.dataset.get_train_x().shape[1], self.class_size, self.last_layer_input).to(self.device)
         self.total_epoch = 500
         self.epoch = -1
