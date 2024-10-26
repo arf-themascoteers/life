@@ -27,3 +27,8 @@ meeting
 =========
 1. loss curve
 2. loss equation (chain rule) - partial derivative
+
+
+linear -> cubic spline
+
+*************set selected indices

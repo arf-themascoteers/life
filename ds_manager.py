@@ -3,11 +3,15 @@ from sklearn.model_selection import train_test_split
 
 
 class DSManager:
-    def __init__(self, name):
+    def __init__(self, name, test=False):
         self.name = name
+        self.test = test
         dataset_path = f"data/{name}.csv"
         df = pd.read_csv(dataset_path)
-        df = df.sample(frac=1).reset_index(drop=True)
+        frac = 1
+        if self.test:
+            frac = 0.5
+        df = df.sample(frac=frac).reset_index(drop=True)
         self.data = df.to_numpy()
 
     def get_name(self):

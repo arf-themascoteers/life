@@ -1,8 +1,6 @@
 from algorithm import Algorithm
 import torch
 import torch.nn as nn
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import cohen_kappa_score
 import numpy as np
 from train_test_evaluator import evaluate_split
 
@@ -66,7 +64,7 @@ class ANN(nn.Module):
         return torch.sigmoid(self.indices)
 
 
-class AlgorithmBSDR(Algorithm):
+class Algorithm_bsdr(Algorithm):
     def __init__(self, target_size, dataset, tag, reporter, verbose, test):
         super().__init__(target_size, dataset, tag, reporter, verbose, test)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -77,8 +75,8 @@ class AlgorithmBSDR(Algorithm):
         self.target_size = target_size
         self.class_size = len(np.unique(self.dataset.get_train_y()))
         self.lr = 0.001
-        self.model = ANN(self.target_size, self.class_size)
-        self.model.to(self.device)
+        self.ann = ANN(self.target_size, self.class_size)
+        self.ann.to(self.device)
         self.criterion = torch.nn.CrossEntropyLoss()
         self.original_feature_size = self.dataset.get_train_x().shape[1]
         self.total_epoch = 500
@@ -86,14 +84,14 @@ class AlgorithmBSDR(Algorithm):
         self.y_train = torch.tensor(self.dataset.get_train_y(), dtype=torch.int32).to(self.device)
 
     def get_selected_indices(self):
-        self.model.train()
+        self.ann.train()
         self.write_columns()
-        optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr, weight_decay=self.lr/10)
+        optimizer = torch.optim.Adam(self.ann.parameters(), lr=self.lr, weight_decay=self.lr/10)
         linterp = LinearInterpolationModule(self.X_train, self.device)
         y = self.y_train.type(torch.LongTensor).to(self.device)
         for epoch in range(self.total_epoch):
             optimizer.zero_grad()
-            y_hat = self.model(linterp)
+            y_hat = self.ann(linterp)
             loss = self.criterion(y_hat, y)
             loss.backward()
             optimizer.step()
@@ -121,7 +119,7 @@ class AlgorithmBSDR(Algorithm):
         print("".join([str(i).ljust(20) for i in cells]))
 
     def get_indices(self):
-        indices = torch.round(self.model.get_indices() * self.original_feature_size ).to(torch.int64).tolist()
+        indices = torch.round(self.ann.get_indices() * self.original_feature_size ).to(torch.int64).tolist()
         return list(dict.fromkeys(indices))
 
     def transform(self, X):

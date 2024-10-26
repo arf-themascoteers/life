@@ -21,6 +21,11 @@ class Reporter:
         self.current_weight_all_report_file = None
         os.makedirs("results", exist_ok=True)
 
+        for file in os.listdir("results"):
+            file_path = os.path.join("results", file)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+
         if not os.path.exists(self.summary_file):
             with open(self.summary_file, 'w') as file:
                 file.write("dataset,target_size,algorithm,time,oa,aa,k,selected_bands,selected_weights\n")
