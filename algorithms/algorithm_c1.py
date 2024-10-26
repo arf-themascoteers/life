@@ -121,6 +121,7 @@ class Algorithm_c1(Algorithm):
 
                 if not self.dataset.is_classification():
                     y_hat = y_hat.reshape(-1)
+                else:
                     y = y.type(torch.LongTensor).to(self.device)
 
                 mse_loss = self.criterion(y_hat, y)

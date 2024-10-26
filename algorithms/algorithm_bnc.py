@@ -103,6 +103,7 @@ class Algorithm_bnc(Algorithm):
                 self.set_weights(mean_weight)
                 if not self.dataset.is_classification():
                     y_hat = y_hat.reshape(-1)
+                else:
                     y = y.type(torch.LongTensor).to(self.device)
                 mse_loss = self.criterion(y_hat, y)
                 l1_loss = self.l1_loss(channel_weights)
