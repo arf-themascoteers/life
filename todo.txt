@@ -41,6 +41,11 @@ mso
 ---------------
 
 4 types of lucas texture - https://www.sciencedirect.com/science/article/pii/S0016706121004468
+
+===
+
+improve bsdr -> shortlist and then attention
+improve bsdr -> 2x and then make them converge and pick top x (shapely?)
 ===================
 
 regression
