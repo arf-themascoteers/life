@@ -3,7 +3,7 @@ from task_runner import TaskRunner
 if __name__ == '__main__':
     tag = "p5"
     tasks = {
-        "algorithms" : ["random", "linspacer", "pcal", "mcuve", "bsnet", "bnc", "c1", "bsdr","bsdrattn","c1_wo_dsc","msobsdr"],
+        "algorithms" : ["random", "linspacer", "pcal", "mcuve", "bsnet", "bnc", "c1", "bsdr","c1_wo_dsc","msobsdr"],
         "datasets": ["salinas"],
         "target_sizes" : list(range(2,31))
     }
