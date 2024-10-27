@@ -40,8 +40,11 @@ def plot_algorithm(ax, algorithm, algorithm_index, metric, alg_df):
 
 
 def plot_metric(algorithms, metric, metric_index, dataset_index, dataset, ddf, ax):
-    min_lim = 0#ddf[metric].min() - 0.02
-    max_lim = 1#ddf[metric].max() - 0.02
+    ddf[metric] = ddf[metric].clip(lower=0)
+    min_lim = max(ddf[metric].min() - 0.02,0)
+    max_lim = min(ddf[metric].max() + 0.02,1)
+
+    print(min_lim, max_lim, metric)
 
     for algorithm_index, algorithm in enumerate(algorithms):
         alg_df = ddf[ddf["algorithm"] == algorithm]
