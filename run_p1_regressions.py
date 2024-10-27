@@ -1,6 +1,6 @@
 from task_runner import TaskRunner
 
-#All algorithms for lucas except for multi-bsdr
+#All algorithms for lucas except for multi-bsdr and wo-dsc
 if __name__ == '__main__':
     tag = "p1"
     tasks = {
