@@ -53,7 +53,4 @@ def det():
 
 
 if __name__ == '__main__':
-    print(rs(2))
-    print(rs(5))
-    print(rs(25))
-    print(sum(rs(50)))
+    print(inverse_sigmoid_torch(torch.tensor(0.99)))

@@ -47,10 +47,11 @@ class Agent(nn.Module):
         self.classification = classification
         self.r1 = torch.tensor(r1, dtype=torch.float32)
         self.r2 = torch.tensor(r2, dtype=torch.float32)
-        print(r1,r2)
+        #print(r1,r2)
         init_vals = torch.linspace(0.001, 0.99, self.target_size + 2)
         displacement = offset*start
         init_vals[1:-1] = init_vals[1:-1] + displacement
+        init_vals = torch.clamp(init_vals, max=0.99)
         self.indices = nn.Parameter(
             torch.tensor([Agent.inverse_sigmoid_torch(init_vals[i + 1]) for i in range(self.target_size)],
                          requires_grad=True).to(self.device))
@@ -61,7 +62,8 @@ class Agent(nn.Module):
             nn.LeakyReLU(),
             nn.Linear(64, self.class_size)
         )
-
+        # print(torch.min(self.indices))
+        # print(torch.max(self.indices))
         if self.classification:
             self.criterion = torch.nn.CrossEntropyLoss()
         else:
@@ -72,7 +74,8 @@ class Agent(nn.Module):
         return -torch.log(1.0 / x - 1.0)
 
     def forward(self, linterp, y):
-        outputs = linterp(self.get_indices())
+        indices = self.get_indices()
+        outputs = linterp(indices)
         soc_hat = self.linear(outputs)
         if self.class_size == 1:
             soc_hat = soc_hat.reshape(-1)
@@ -81,7 +84,8 @@ class Agent(nn.Module):
         r1_loss = torch.relu(self.r1 - norm)
         r2_loss = torch.relu(norm-self.r2)
         r_loss = r1_loss+r2_loss
-        return soc_hat, loss, r_loss
+        successive_loss = torch.sum(torch.stack([torch.relu(self.indices[i]-self.indices[i+1]) for i in range(len(self.indices)-1)]))
+        return soc_hat, loss, r_loss, successive_loss
 
     def get_indices(self):
         return torch.sigmoid(self.indices)
@@ -94,7 +98,7 @@ class ANN(nn.Module):
         self.target_size = target_size
         self.class_size = class_size
         self.original_size = original_size
-        self.num_agents = 5
+        self.num_agents = 20
         self.classification = classification
 
         band_unit = 1 / original_size
@@ -105,10 +109,15 @@ class ANN(nn.Module):
         )
 
         self.best = 0
+        #self.print_weights()
+
+    def print_weights(self):
+        for i in range(self.num_agents):
+            print("\t".join([str(round(i.item(),5)) for i in self.agents[i].get_indices()]))
+            print("\t".join([str(round(i.item(), 5)) for i in self.agents[i].get_indices()*self.original_size]))
 
     def get_rs(self):
-        m = self.num_agents / 4
-        r_values = [math.exp(-i / m) for i in range(self.num_agents)]
+        r_values = [1/math.pow(1+1,2) for i in range(self.num_agents)]
         s = sum(r_values)
         r_values = [r / s for r in r_values]
         r_values = list(accumulate(r_values))
@@ -116,12 +125,13 @@ class ANN(nn.Module):
 
     def forward(self, linterp, y):
         futures = [fork(linear, linterp, y) for linear in self.agents]
-        y_preds, losses, r_losses = zip(*[wait(future) for future in futures])
+        y_preds, losses, r_losses, successive_loss = zip(*[wait(future) for future in futures])
         losses = torch.stack(losses)
         r_losses = torch.stack(r_losses)
+        successive_loss = torch.stack(successive_loss)
         self.best = torch.argmin(losses)
         output = y_preds[self.best]
-        loss = torch.sum(losses) + 20*torch.sum(r_losses)
+        loss = torch.sum(losses) + 40*torch.sum(r_losses) + 40*torch.sum(successive_loss)
 
         ls = [str(round(l.item(),5)) for l in losses]
         ls = "\t".join(ls)
@@ -129,7 +139,10 @@ class ANN(nn.Module):
         rs = [str(round(l.item(),5)) for l in r_losses]
         rs = "\t".join(rs)
 
-        s = ls + "\t\t" + rs
+        ss = [str(round(l.item(),5)) for l in successive_loss]
+        ss = "\t".join(ss)
+
+        s = ls + "\t\t" + rs + "\t\t" + ss
 
         agent_bands = [a.get_indices()*self.original_size for a in self.agents]
         band_strs = []
@@ -161,11 +174,11 @@ class Algorithm_msobsdr(Algorithm):
         if self.classification:
             self.class_size = len(np.unique(self.dataset.get_bs_train_y()))
             self.lr = 0.01
-            self.total_epoch = 500
+            self.total_epoch = 1000
         else:
             self.class_size = 1
             self.lr = 0.001
-            self.total_epoch = 500
+            self.total_epoch = 1000
         self.original_feature_size = self.dataset.get_bs_train_x().shape[1]
         self.ann = ANN(self.target_size, self.class_size, self.original_feature_size, self.classification)
         self.ann.to(self.device)
