@@ -40,8 +40,8 @@ def plot_algorithm(ax, algorithm, algorithm_index, metric, alg_df):
 
 
 def plot_metric(algorithms, metric, metric_index, dataset_index, dataset, ddf, ax):
-    min_lim = ddf[metric].min() - 0.02
-    max_lim = ddf[metric].max() - 0.02
+    min_lim = 0#ddf[metric].min() - 0.02
+    max_lim = 1#ddf[metric].max() - 0.02
 
     for algorithm_index, algorithm in enumerate(algorithms):
         alg_df = ddf[ddf["algorithm"] == algorithm]
@@ -65,16 +65,19 @@ def plot_metric(algorithms, metric, metric_index, dataset_index, dataset, ddf, a
         ax.set_title(DSS[dataset], fontsize=20)
 
 
-def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=None):
+def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=None,pending=False):
+    resource = "../../saved_results"
+    if pending:
+        resource = "../../results"
     if exclude is None:
         exclude = []
     if sources is None:
-        sources = os.listdir("../../saved_results")
+        sources = os.listdir(resource)
     graphics_folder = "../../saved_graphics"
     os.makedirs(graphics_folder, exist_ok=True)
     dest = f"image_{int(time.time())}.png"
     dest = os.path.join(graphics_folder, dest)
-    df = accumulate_results.accumulate_results(sources,excluded=exclude)
+    df = accumulate_results.accumulate_results(sources,excluded=exclude, pending=pending)
     datasets = df["dataset"].unique()
     datasets = [d for d in datasets if not DSManager.is_dataset_classification(d)]
     if only_datasets is not None:

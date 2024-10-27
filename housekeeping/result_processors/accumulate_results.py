@@ -2,12 +2,14 @@ import pandas as pd
 import os
 
 
-def accumulate_results(sources, dest=None, excluded = None):
+def accumulate_results(sources, dest=None, excluded = None, pending=False):
     if dest is None:
         dest = "dummy.csv"
     if excluded is None:
         excluded = []
     source_folder = "../../saved_results"
+    if pending:
+        source_folder = "../../results"
     dest_folder = "../../acc_results"
 
     sources = [os.path.join(source_folder, source) for source in sources if source not in excluded]
