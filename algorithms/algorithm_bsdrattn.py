@@ -205,7 +205,7 @@ class Algorithm_bsdrattn(Algorithm):
         cells = [epoch, loss, oa, aa, k]
         cells = [round(item, 5) if isinstance(item, float) else item for item in cells]
         cells = cells + [",".join([str(i) for i in self.all_indices])]
-        cells = cells + [",".join([str(round(i,3)) for i in self.weights])]
+        cells = cells + ["------"+(",".join([str(round(i.item(),3)) for i in self.weights]))]
         print("".join([str(i).ljust(20) for i in cells]))
 
     def is_cacheable(self):
