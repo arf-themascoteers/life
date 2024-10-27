@@ -118,19 +118,22 @@ class Algorithm_bsdrattn(Algorithm):
         torch.backends.cudnn.deterministic = True
         self.verbose = verbose
         self.target_size = target_size
-        self.shortlist = self.target_size*3
         self.classification = dataset.is_classification()
+
         if self.classification:
             self.criterion = torch.nn.CrossEntropyLoss()
             self.class_size = len(np.unique(self.dataset.get_bs_train_y()))
             self.lr = 0.01
             self.total_epoch = 500
+            m = 3
         else:
             self.criterion = torch.nn.MSELoss()
             self.class_size = 1
             self.lr = 0.01
             self.total_epoch = 500
-            
+            m = 6
+
+        self.shortlist = self.target_size * m
         self.ann = ANN(dataset.get_name(), self.target_size, self.class_size, self.shortlist)
         self.ann.to(self.device)
         self.original_feature_size = self.dataset.get_bs_train_x().shape[1]

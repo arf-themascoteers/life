@@ -88,7 +88,7 @@ class Algorithm_bsnet(Algorithm):
                     self.report_stats(channel_weights, channel_weights, epoch, mse_loss, l1_loss.item(), 0.01,loss)
                 loss.backward()
                 optimizer.step()
-            print(f"Epoch={epoch} MSE={round(mse_loss.item(), 5)}, L1={round(l1_loss.item(), 5)}, LOSS={round(loss.item(), 5)}")
+            #print(f"Epoch={epoch} MSE={round(mse_loss.item(), 5)}, L1={round(l1_loss.item(), 5)}, LOSS={round(loss.item(), 5)}")
 
         print(self.get_name(),"selected bands and weights:")
         print("".join([str(i).ljust(10) for i in self.selected_indices]))
