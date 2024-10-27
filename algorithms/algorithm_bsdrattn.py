@@ -125,13 +125,13 @@ class Algorithm_bsdrattn(Algorithm):
             self.class_size = len(np.unique(self.dataset.get_bs_train_y()))
             self.lr = 0.01
             self.total_epoch = 500
-            m = 3
+            m = 5
         else:
             self.criterion = torch.nn.MSELoss()
             self.class_size = 1
             self.lr = 0.01
             self.total_epoch = 500
-            m = 6
+            m = 20
 
         self.shortlist = self.target_size * m
         self.ann = ANN(dataset.get_name(), self.target_size, self.class_size, self.shortlist)
@@ -206,7 +206,7 @@ class Algorithm_bsdrattn(Algorithm):
         print("".join([str(i).ljust(20) for i in cells]))
 
     def get_indices(self):
-        indices = torch.round(self.get_selected_indices() * self.original_feature_size ).to(torch.int64).tolist()
+        indices = torch.round(self.selected_indices * self.original_feature_size ).to(torch.int64).tolist()
         return list(dict.fromkeys(indices))
 
     def transform(self, X):
