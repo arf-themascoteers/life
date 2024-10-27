@@ -39,7 +39,7 @@ class LinearInterpolationModule(nn.Module):
 
 
 class Agent(nn.Module):
-    def __init__(self, target_size, class_size, classification, offset, start, r1, r2, last=False, var = False, lin=False):
+    def __init__(self, target_size, class_size, classification, offset, start, r1, r2, last=False, var = 0, lin=False):
         super().__init__()
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.target_size = target_size
@@ -95,8 +95,8 @@ class Agent(nn.Module):
             r_loss = r_loss + r2_loss
 
         var_loss = zero
-        if self.var:
-            var_loss = 1/torch.var(self.raw_indices)
+        if self.var !=0 :
+            var_loss = (1/torch.var(self.raw_indices))*self.var
 
         successive_loss = torch.sum(torch.stack([torch.relu(self.raw_indices[i] - self.raw_indices[i + 1]) for i in range(len(self.raw_indices) - 1)]))
         return soc_hat, loss, r_loss, successive_loss, var_loss
@@ -117,13 +117,13 @@ class ANN(nn.Module):
 
         band_unit = 1 / original_size
 
-        var_agents = [2,3,6,7]
+        var_agents = [0,0,5,10,0,0,20,40,0,0]
         linear_spaced_agent = [4]
 
         rs = [0]+self.get_rs()
         self.agents = nn.ModuleList(
             [Agent(self.target_size, self.class_size, self.classification, band_unit, i, rs[i], rs[i+1], last=(i==self.num_agents-1),
-                   var=(i in var_agents), lin=(i in linear_spaced_agent)) for i in range(self.num_agents)]
+                   var=var_agents[i], lin=(i in linear_spaced_agent)) for i in range(self.num_agents)]
         )
 
         self.best = 0
@@ -151,7 +151,7 @@ class ANN(nn.Module):
         var_loss = torch.stack(var_loss)
         self.best = torch.argmin(losses)
         output = y_preds[self.best]
-        loss = torch.sum(losses) + 40*torch.sum(r_losses) + 40*torch.sum(successive_loss) + 20*torch.sum(var_loss)
+        loss = torch.sum(losses) + 40*torch.sum(r_losses) + 40*torch.sum(successive_loss) + torch.sum(var_loss)
 
         ls = [str(round(l.item(),5)) for l in losses]
         ls = "\t".join(ls)
