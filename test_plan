@@ -53,8 +53,8 @@ bsdrattn - all db
 
 p5:
 
-all - salinas
+all (ex bsdrattn)- salinas
 
 p6:
 
-all - ghisa
+all (ex bsdrattn) - ghisa
