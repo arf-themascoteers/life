@@ -1,10 +1,10 @@
 from task_runner import TaskRunner
 
-#All algorithms for lucas except for multi-bsdr and wo-dsc
+#All algorithms for lucas except for multi-bsdr
 if __name__ == '__main__':
     tag = "p1"
     tasks = {
-        "algorithms" : ["random", "linspacer", "pcal", "mcuve", "bsnet", "bnc", "c1", "bsdr","bsdrattn"],
+        "algorithms" : ["random", "linspacer", "pcal", "mcuve", "bsnet", "bnc", "c1", "bsdr","bsdrattn","c1_wo_dsc"],
         "datasets": ["lucas_r"],
         "target_sizes" : list(range(2,31))
     }
