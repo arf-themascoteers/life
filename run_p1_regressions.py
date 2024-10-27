@@ -2,11 +2,11 @@ from task_runner import TaskRunner
 
 #All algorithms for lucas except for multi-bsdr
 if __name__ == '__main__':
-    tag = "r1"
+    tag = "p1"
     tasks = {
         "algorithms" : ["random", "linspacer", "pcal", "mcuve", "bsnet", "bnc", "c1", "bsdr","bsdrattn"],
         "datasets": ["lucas_r"],
         "target_sizes" : list(range(2,31))
     }
-    ev = TaskRunner(tasks,tag,skip_all_bands=True, verbose=True, test=False)
+    ev = TaskRunner(tasks,tag,skip_all_bands=False, verbose=False, test=False)
     summary, details = ev.evaluate()
