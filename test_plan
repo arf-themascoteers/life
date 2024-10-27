@@ -28,3 +28,25 @@ Datasets
 4. salinas
 
 5. ghisaconus
+
+
+==========
+
+p1:
+
+all but msobsdr and bsdrattn
+remove prev bsdrattn
+
+p2:
+
+msobsdr lucas
+
+p3:
+
+bsdrattn - all db
+
+p4:
+
+all classification
+remove bsdrattn
+
