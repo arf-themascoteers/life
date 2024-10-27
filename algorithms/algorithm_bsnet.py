@@ -53,7 +53,7 @@ class Algorithm_bsnet(Algorithm):
         super().__init__(target_size, dataset, tag, reporter, verbose, test)
         self.criterion = torch.nn.MSELoss(reduction='sum')
         self.epoch = -1
-        x,y = self.dataset.get_train_x_y()
+        x,y = self.dataset.get_bs_train_x_y()
         self.bsnet = BSNetFC(x.shape[1]).to(self.device)
         self.X_train = torch.tensor(x, dtype=torch.float32).to(self.device)
         self.y_train = torch.tensor(y, dtype=torch.int32).to(self.device)

@@ -8,7 +8,7 @@ class Algorithm_linspacer(Algorithm):
         self.indices = None
 
     def get_selected_indices(self):
-        original_size = self.dataset.get_train_x().shape[1]
+        original_size = self.dataset.get_bs_train_x().shape[1]
         indices = self.get_points(0, original_size-1, self.target_size,1)
         self.indices = torch.round(indices).long().tolist()
         self.set_selected_indices(self.indices)

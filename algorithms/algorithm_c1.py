@@ -80,22 +80,22 @@ class Algorithm_c1(Algorithm):
         super().__init__(target_size, dataset, tag, reporter, verbose, test)
         if dataset.is_classification():
             self.criterion = torch.nn.CrossEntropyLoss()
-            self.class_size = len(np.unique(self.dataset.get_train_y()))
+            self.class_size = len(np.unique(self.dataset.get_bs_train_y()))
         else:
             self.criterion = torch.nn.MSELoss()
             self.class_size = 1
         self.last_layer_input = 100
         if self.dataset.name == "paviaU":
             self.last_layer_input = 48
-        self.zhangnet = ZhangNet(self.dataset.get_train_x().shape[1], self.class_size, self.last_layer_input,
+        self.zhangnet = ZhangNet(self.dataset.get_bs_train_x().shape[1], self.class_size, self.last_layer_input,
                                  self.dataset.get_name()).to(self.device)
         self.total_epoch = 500
         self.epoch = -1
-        self.X_train = torch.tensor(self.dataset.get_train_x(), dtype=torch.float32).to(self.device)
+        self.X_train = torch.tensor(self.dataset.get_bs_train_x(), dtype=torch.float32).to(self.device)
         ytype = torch.float32
         if dataset.is_classification():
             ytype = torch.int32
-        self.y_train = torch.tensor(self.dataset.get_train_y(), dtype=ytype).to(self.device)
+        self.y_train = torch.tensor(self.dataset.get_bs_train_y(), dtype=ytype).to(self.device)
 
     def get_selected_indices(self):
         optimizer = torch.optim.Adam(self.zhangnet.parameters(), lr=0.001, betas=(0.9,0.999))

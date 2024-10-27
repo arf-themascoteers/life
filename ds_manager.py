@@ -15,9 +15,7 @@ class DSManager:
         self.data = df.to_numpy()
 
     def is_classification(self):
-        if self.name == "lucas_r":
-            return False
-        return True
+        return DSManager.is_dataset_classification(self.name)
 
     def get_name(self):
         return self.name
@@ -35,19 +33,22 @@ class DSManager:
             return train_test_split(self.data[:,0:-1], self.data[:,-1], test_size=0.95, random_state=seed, stratify=self.data[:, -1])
         return train_test_split(self.data[:, 0:-1], self.data[:, -1], test_size=0.95, random_state=seed)
 
-    def get_bs_train_data(self):
-        return self.data
+    def get_bs_train_x_y(self):
+        return self.get_bs_train_x(), self.get_bs_train_y()
 
-    def get_train_x_y(self):
-        return self.get_train_x(), self.get_train_y()
-
-    def get_train_x(self):
+    def get_bs_train_x(self):
         return self.data[:,0:-1]
 
-    def get_train_y(self):
+    def get_bs_train_y(self):
         return self.data[:, -1]
 
     def __repr__(self):
         return self.get_name()
+
+    @staticmethod
+    def is_dataset_classification(name):
+        if name == "lucas_r":
+            return False
+        return True
 
 

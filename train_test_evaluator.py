@@ -47,4 +47,4 @@ def get_metric_evaluator(classification=True):
     if classification:
         return SVC(C=1e5, kernel='rbf', gamma=1.)
     else:
-        return SVR(C=1e5, kernel='rbf', gamma=1.)
+        return SVR(C=100, kernel='rbf', gamma=1)

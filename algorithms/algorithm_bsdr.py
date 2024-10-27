@@ -5,6 +5,13 @@ import numpy as np
 from train_test_evaluator import evaluate_split
 
 
+def r2_score_torch(y, y_pred):
+    ss_tot = torch.sum((y - torch.mean(y)) ** 2)
+    ss_res = torch.sum((y - y_pred) ** 2)
+    r2 = 1 - (ss_res / ss_tot)
+    return round(r2.item(),5)
+
+
 class LinearInterpolationModule(nn.Module):
     def __init__(self, y_points, device):
         super(LinearInterpolationModule, self).__init__()
@@ -73,41 +80,47 @@ class Algorithm_bsdr(Algorithm):
         torch.backends.cudnn.deterministic = True
         self.verbose = verbose
         self.target_size = target_size
-        if dataset.is_classification():
+        self.classification = dataset.is_classification()
+        if self.classification:
             self.criterion = torch.nn.CrossEntropyLoss()
-            self.class_size = len(np.unique(self.dataset.get_train_y()))
+            self.class_size = len(np.unique(self.dataset.get_bs_train_y()))
+            self.lr = 0.01
+            self.total_epoch = 500
         else:
             self.criterion = torch.nn.MSELoss()
             self.class_size = 1
-        self.lr = 0.001
+            self.lr = 0.001
+            self.total_epoch = 500
+
         self.ann = ANN(self.target_size, self.class_size)
         self.ann.to(self.device)
-        self.original_feature_size = self.dataset.get_train_x().shape[1]
-        self.total_epoch = 500
-        self.X_train = torch.tensor(self.dataset.get_train_x(), dtype=torch.float32).to(self.device)
+        self.original_feature_size = self.dataset.get_bs_train_x().shape[1]
+
+        self.X_train = torch.tensor(self.dataset.get_bs_train_x(), dtype=torch.float32).to(self.device)
         ytype = torch.float32
-        if dataset.is_classification():
+        if self.classification:
             ytype = torch.int32
-        self.y_train = torch.tensor(self.dataset.get_train_y(), dtype=ytype).to(self.device)
+        self.y_train = torch.tensor(self.dataset.get_bs_train_y(), dtype=ytype).to(self.device)
 
     def get_selected_indices(self):
         self.ann.train()
         self.write_columns()
         optimizer = torch.optim.Adam(self.ann.parameters(), lr=self.lr, weight_decay=self.lr/10)
         linterp = LinearInterpolationModule(self.X_train, self.device)
-        if self.dataset.is_classification():
+        if self.classification:
             y = self.y_train.type(torch.LongTensor).to(self.device)
         else:
             y = self.y_train
         for epoch in range(self.total_epoch):
             optimizer.zero_grad()
             y_hat = self.ann(linterp)
-            if not self.dataset.is_classification():
+            if not self.classification:
                 y_hat = y_hat.reshape(-1)
             loss = self.criterion(y_hat, y)
             loss.backward()
             optimizer.step()
-            self.report(epoch, loss.item())
+            r2_train = r2_score_torch(y, y_hat)
+            self.report(epoch, loss.item(), r2_train)
         self.set_selected_indices(self.get_indices())
         self.set_weights([1]*self.target_size)
         return self, self.get_indices()
@@ -115,20 +128,30 @@ class Algorithm_bsdr(Algorithm):
     def write_columns(self):
         if not self.verbose:
             return
-        selected_bands = self.get_indices()
-        columns = ["epoch","loss","oa","aa","k"] + [f"band_{index+1}" for index in range(len(selected_bands))]
+        m1 = "oa"
+        m2 = "aa"
+        m3 = "k"
+        if not self.classification:
+            m1 = "r2"
+            m2 = "rmse"
+            m3 = "r2_train"
+        columns = ["epoch","loss",m1,m2,m3] + [f"band_{index+1}" for index in range(self.target_size)]
         print("".join([str(i).ljust(20) for i in columns]))
 
-    def report(self, epoch, loss):
+    def report(self, epoch, loss, r2_train):
         if not self.verbose:
             return
         if epoch%10 != 0:
             return
 
-        oa, aa, k = evaluate_split(*self.dataset.get_a_fold(), self)
+
+        m1,m2,m3 = evaluate_split(*self.dataset.get_a_fold(), self, classification=self.classification)
+        if not self.classification:
+            m3 = r2_train
+
         bands = self.get_indices()
-        self.reporter.report_epoch_bsdr(epoch, loss, oa, aa, k, bands)
-        cells = [epoch, loss, oa, aa, k] + bands
+        self.reporter.report_epoch_bsdr(epoch, loss, m1, m2, m3, bands)
+        cells = [epoch, loss, m1,m2,m3] + bands
         cells = [round(item, 5) if isinstance(item, float) else item for item in cells]
         print("".join([str(i).ljust(20) for i in cells]))
 

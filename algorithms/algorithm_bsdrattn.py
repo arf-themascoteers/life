@@ -121,20 +121,20 @@ class Algorithm_bsdrattn(Algorithm):
         self.shortlist = self.target_size*3
         if dataset.is_classification():
             self.criterion = torch.nn.CrossEntropyLoss()
-            self.class_size = len(np.unique(self.dataset.get_train_y()))
+            self.class_size = len(np.unique(self.dataset.get_bs_train_y()))
         else:
             self.criterion = torch.nn.MSELoss()
             self.class_size = 1
         self.lr = 0.001
         self.ann = ANN(dataset.get_name(), self.target_size, self.class_size, self.shortlist)
         self.ann.to(self.device)
-        self.original_feature_size = self.dataset.get_train_x().shape[1]
+        self.original_feature_size = self.dataset.get_bs_train_x().shape[1]
         self.total_epoch = 500
-        self.X_train = torch.tensor(self.dataset.get_train_x(), dtype=torch.float32).to(self.device)
+        self.X_train = torch.tensor(self.dataset.get_bs_train_x(), dtype=torch.float32).to(self.device)
         ytype = torch.float32
         if dataset.is_classification():
             ytype = torch.int32
-        self.y_train = torch.tensor(self.dataset.get_train_y(), dtype=ytype).to(self.device)
+        self.y_train = torch.tensor(self.dataset.get_bs_train_y(), dtype=ytype).to(self.device)
 
     def get_selected_indices(self):
         self.ann.train()

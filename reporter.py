@@ -201,7 +201,7 @@ class Reporter:
             file.write(f"{epoch},"
                        f"{Reporter.sanitize_metric(mse_loss)},"
                        f"{Reporter.sanitize_metric(oa)},{Reporter.sanitize_metric(aa)},{Reporter.sanitize_metric(k)},"
-                       f"{','.join(selected_bands)}\n"
+                       f"{','.join([str(i) for i in selected_bands])}\n"
                        )
 
     def report_weight(self, epoch, weights):
