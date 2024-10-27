@@ -138,8 +138,10 @@ def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=N
     #fig.tight_layout()
     #fig.subplots_adjust(wspace=0.3, hspace=0.5, top=0.95, bottom=0.15)
     plt.savefig(dest, bbox_inches='tight', pad_inches=0.05)
+    plt.show()
     plt.close(fig)
 
 
 if __name__ == "__main__":
     plot_combined(sources=["bsdr","bsdrattn"], only_algorithms=["bsdr","bsdrattn","c1"], only_datasets=["indian_pines"])
+
