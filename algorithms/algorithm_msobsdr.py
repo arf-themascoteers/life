@@ -127,7 +127,7 @@ class ANN(nn.Module):
         )
 
         self.best = 0
-        self.print_weights()
+        #self.print_weights()
 
     def print_weights(self):
         for i in range(self.num_agents):
@@ -153,30 +153,32 @@ class ANN(nn.Module):
         output = y_preds[self.best]
         loss = torch.sum(losses) + 40*torch.sum(r_losses) + 40*torch.sum(successive_loss) + torch.sum(var_loss)
 
-        ls = [str(round(l.item(),5)) for l in losses]
-        ls = "\t".join(ls)
 
-        rs = [str(round(l.item(),5)) for l in r_losses]
-        rs = "\t".join(rs)
+        if False:
+            ls = [str(round(l.item(),5)) for l in losses]
+            ls = "\t".join(ls)
 
-        ss = [str(round(l.item(),5)) for l in successive_loss]
-        ss = "\t".join(ss)
+            rs = [str(round(l.item(),5)) for l in r_losses]
+            rs = "\t".join(rs)
 
-        vs = [str(round(l.item(),5)) for l in var_loss]
-        vs = "\t".join(vs)
+            ss = [str(round(l.item(),5)) for l in successive_loss]
+            ss = "\t".join(ss)
 
-        s = ls + "\t\t" + rs + "\t\t" + ss + "\t\t" + vs
+            vs = [str(round(l.item(),5)) for l in var_loss]
+            vs = "\t".join(vs)
 
-        agent_bands = [a.get_indices()*self.original_size for a in self.agents]
-        band_strs = []
-        for ab in agent_bands:
-            band_strs.append("\t".join([str(round(b.item())) for b in ab]))
+            s = ls + "\t\t" + rs + "\t\t" + ss + "\t\t" + vs
 
-        band_strs = "\t\t".join(band_strs)
+            agent_bands = [a.get_indices()*self.original_size for a in self.agents]
+            band_strs = []
+            for ab in agent_bands:
+                band_strs.append("\t".join([str(round(b.item())) for b in ab]))
 
-        s= s + "\t\t" + band_strs
+            band_strs = "\t\t".join(band_strs)
 
-        print(s)
+            s= s + "\t\t" + band_strs
+
+            print(s)
 
         return output, loss
 
