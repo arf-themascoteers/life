@@ -65,7 +65,7 @@ class Algorithm_c1_wo_dsc(Algorithm):
         super().__init__(target_size, dataset, tag, reporter, verbose, test)
         if dataset.is_classification():
             self.criterion = torch.nn.CrossEntropyLoss()
-            self.class_size = len(np.unique(self.dataset.get_train_y()))
+            self.class_size = len(np.unique(self.dataset.get_bs_train_y()))
         else:
             self.criterion = torch.nn.MSELoss()
             self.class_size = 1
