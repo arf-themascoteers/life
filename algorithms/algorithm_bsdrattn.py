@@ -161,12 +161,12 @@ class Algorithm_bsdrattn(Algorithm):
             else:
                 l0_norm = torch.norm(sparse_weights, p=0).item()
             channel_weights, sparse_weights, y_hat = self.ann(linterp, epoch, l0_norm)
-            deciding_weights = channel_weights
-            mean_weight, all_bands, selected_bands = self.get_weights_indices(deciding_weights)
+            all_bands, selected_bands = self.get_weights_indices(channel_weights, self.ann.get_indices())
 
             self.set_all_indices(all_bands)
             self.set_selected_indices(selected_bands)
-            self.set_weights(mean_weight)
+            self.set_weights(channel_weights)
+
             if not self.classification:
                 y_hat = y_hat.reshape(-1)
             mse_loss = self.criterion(y_hat, y)
@@ -180,17 +180,10 @@ class Algorithm_bsdrattn(Algorithm):
 
         return self, self.get_indices()
 
-    def get_weights_indices(self, deciding_weights):
-        mean_weights = deciding_weights
-        if len(mean_weights.shape) > 1:
-            mean_weights = torch.mean(mean_weights, dim=0)
-
-        corrected_weights = mean_weights
-        if torch.any(corrected_weights < 0):
-            corrected_weights = torch.abs(corrected_weights)
-
-        band_indx = (torch.argsort(corrected_weights, descending=True)).tolist()
-        return mean_weights, band_indx, band_indx[: self.target_size]
+    def get_weights_indices(self, channel_weights, bands):
+        band_indx = (torch.argsort(channel_weights, descending=True)).tolist()
+        ordered_bands = bands[band_indx]
+        return ordered_bands, ordered_bands[: self.target_size]
 
     def write_columns(self):
         if not self.verbose:
@@ -213,7 +206,7 @@ class Algorithm_bsdrattn(Algorithm):
         print("".join([str(i).ljust(20) for i in cells]))
 
     def get_indices(self):
-        indices = torch.round(self.ann.get_indices() * self.original_feature_size ).to(torch.int64).tolist()
+        indices = torch.round(self.get_selected_indices() * self.original_feature_size ).to(torch.int64).tolist()
         return list(dict.fromkeys(indices))
 
     def transform(self, X):
