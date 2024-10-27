@@ -39,19 +39,23 @@ class LinearInterpolationModule(nn.Module):
 
 
 class Agent(nn.Module):
-    def __init__(self, target_size, class_size, classification, offset, start, r1,r2):
+    def __init__(self, target_size, class_size, classification, offset, start, r1, r2, last=False, var = 0, lin=False):
         super().__init__()
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.target_size = target_size
         self.class_size = class_size
         self.classification = classification
+        self.last = last
+        self.var = var
+        self.lin = lin
         self.r1 = torch.tensor(r1, dtype=torch.float32)
         self.r2 = torch.tensor(r2, dtype=torch.float32)
-        print(r1,r2)
+        #print(r1,r2)
         init_vals = torch.linspace(0.001, 0.99, self.target_size + 2)
         displacement = offset*start
         init_vals[1:-1] = init_vals[1:-1] + displacement
-        self.indices = nn.Parameter(
+        init_vals = torch.clamp(init_vals, max=0.99)
+        self.raw_indices = nn.Parameter(
             torch.tensor([Agent.inverse_sigmoid_torch(init_vals[i + 1]) for i in range(self.target_size)],
                          requires_grad=True).to(self.device))
         self.linear = nn.Sequential(
@@ -61,7 +65,8 @@ class Agent(nn.Module):
             nn.LeakyReLU(),
             nn.Linear(64, self.class_size)
         )
-
+        # print(torch.min(self.indices))
+        # print(torch.max(self.indices))
         if self.classification:
             self.criterion = torch.nn.CrossEntropyLoss()
         else:
@@ -72,19 +77,32 @@ class Agent(nn.Module):
         return -torch.log(1.0 / x - 1.0)
 
     def forward(self, linterp, y):
-        outputs = linterp(self.get_indices())
+        zero = torch.tensor(0,dtype=torch.float32).to(self.device)
+        indices = self.get_indices()
+        outputs = linterp(indices)
         soc_hat = self.linear(outputs)
         if self.class_size == 1:
             soc_hat = soc_hat.reshape(-1)
         loss = self.criterion(soc_hat,y)
-        norm = torch.norm(self.get_indices(), p=2)
+        if self.lin:
+            return soc_hat, loss, zero,zero,zero
+
+        norm = torch.norm(indices, p=2)
         r1_loss = torch.relu(self.r1 - norm)
-        r2_loss = torch.relu(norm-self.r2)
-        r_loss = r1_loss+r2_loss
-        return soc_hat, loss, r_loss
+        r_loss = r1_loss
+        if not self.last:
+            r2_loss = torch.relu(norm - self.r2)
+            r_loss = r_loss + r2_loss
+
+        var_loss = zero
+        if self.var !=0 :
+            var_loss = (1/torch.var(self.raw_indices))*self.var
+
+        successive_loss = torch.sum(torch.stack([torch.relu(self.raw_indices[i] - self.raw_indices[i + 1]) for i in range(len(self.raw_indices) - 1)]))
+        return soc_hat, loss, r_loss, successive_loss, var_loss
 
     def get_indices(self):
-        return torch.sigmoid(self.indices)
+        return torch.sigmoid(self.raw_indices)
 
 
 class ANN(nn.Module):
@@ -94,53 +112,73 @@ class ANN(nn.Module):
         self.target_size = target_size
         self.class_size = class_size
         self.original_size = original_size
-        self.num_agents = 5
+        self.num_agents = 10
         self.classification = classification
 
         band_unit = 1 / original_size
 
+        var_agents = [0,0,5,10,0,0,20,40,0,0]
+        linear_spaced_agent = [4]
+
         rs = [0]+self.get_rs()
         self.agents = nn.ModuleList(
-            [Agent(self.target_size, self.class_size, self.classification, band_unit, i, rs[i], rs[i+1]) for i in range(self.num_agents)]
+            [Agent(self.target_size, self.class_size, self.classification, band_unit, i, rs[i], rs[i+1], last=(i==self.num_agents-1),
+                   var=var_agents[i], lin=(i in linear_spaced_agent)) for i in range(self.num_agents)]
         )
 
         self.best = 0
+        #self.print_weights()
+
+    def print_weights(self):
+        for i in range(self.num_agents):
+            print("\t".join([str(round(i.item(),5)) for i in self.agents[i].get_indices()]))
+            print("\t".join([str(round(i.item(), 5)) for i in self.agents[i].get_indices()*self.original_size]))
 
     def get_rs(self):
-        m = self.num_agents / 4
-        r_values = [math.exp(-i / m) for i in range(self.num_agents)]
+        r_values = [1/math.pow(1+1,2) for i in range(self.num_agents)]
         s = sum(r_values)
         r_values = [r / s for r in r_values]
         r_values = list(accumulate(r_values))
+        r_values = [r*math.sqrt(self.target_size) for r in r_values]
         return r_values
 
     def forward(self, linterp, y):
         futures = [fork(linear, linterp, y) for linear in self.agents]
-        y_preds, losses, r_losses = zip(*[wait(future) for future in futures])
+        y_preds, losses, r_losses, successive_loss, var_loss = zip(*[wait(future) for future in futures])
         losses = torch.stack(losses)
         r_losses = torch.stack(r_losses)
+        successive_loss = torch.stack(successive_loss)
+        var_loss = torch.stack(var_loss)
         self.best = torch.argmin(losses)
         output = y_preds[self.best]
-        loss = torch.sum(losses) + 20*torch.sum(r_losses)
+        loss = torch.sum(losses) + 40*torch.sum(r_losses) + 40*torch.sum(successive_loss) + torch.sum(var_loss)
 
-        ls = [str(round(l.item(),5)) for l in losses]
-        ls = "\t".join(ls)
 
-        rs = [str(round(l.item(),5)) for l in r_losses]
-        rs = "\t".join(rs)
+        if False:
+            ls = [str(round(l.item(),5)) for l in losses]
+            ls = "\t".join(ls)
 
-        s = ls + "\t\t" + rs
+            rs = [str(round(l.item(),5)) for l in r_losses]
+            rs = "\t".join(rs)
 
-        agent_bands = [a.get_indices()*self.original_size for a in self.agents]
-        band_strs = []
-        for ab in agent_bands:
-            band_strs.append("\t".join([str(round(b.item())) for b in ab]))
+            ss = [str(round(l.item(),5)) for l in successive_loss]
+            ss = "\t".join(ss)
 
-        band_strs = "\t\t".join(band_strs)
+            vs = [str(round(l.item(),5)) for l in var_loss]
+            vs = "\t".join(vs)
 
-        s= s + "\t\t" + band_strs
+            s = ls + "\t\t" + rs + "\t\t" + ss + "\t\t" + vs
 
-        print(s)
+            agent_bands = [a.get_indices()*self.original_size for a in self.agents]
+            band_strs = []
+            for ab in agent_bands:
+                band_strs.append("\t".join([str(round(b.item())) for b in ab]))
+
+            band_strs = "\t\t".join(band_strs)
+
+            s= s + "\t\t" + band_strs
+
+            print(s)
 
         return output, loss
 
@@ -161,11 +199,11 @@ class Algorithm_msobsdr(Algorithm):
         if self.classification:
             self.class_size = len(np.unique(self.dataset.get_bs_train_y()))
             self.lr = 0.01
-            self.total_epoch = 500
+            self.total_epoch = 1000
         else:
             self.class_size = 1
             self.lr = 0.001
-            self.total_epoch = 500
+            self.total_epoch = 1000
         self.original_feature_size = self.dataset.get_bs_train_x().shape[1]
         self.ann = ANN(self.target_size, self.class_size, self.original_feature_size, self.classification)
         self.ann.to(self.device)

@@ -1,25 +1,14 @@
-# import numpy as np
-# import matplotlib.pyplot as plt
-#
-# # Define the range of x values
-# x = np.linspace(0, 5, 100)
-#
-# # Define the exponential decay function
-# y = np.exp(-x)
-#
-# # Plot the function
-# plt.plot(x, y, label="f(x) = e^(-x)")
-# plt.xlabel("x")
-# plt.ylabel("f(x)")
-# plt.title("Exponential Decay Function")
-# plt.legend()
-# plt.grid(True)
-# plt.show()
+import math
+from itertools import accumulate
 
 
-import torch
+def get_rs(num_agents):
+    r_values = [1 / math.pow(1 + 1, 2) for i in range(num_agents)]
+    s = sum(r_values)
+    r_values = [r / s for r in r_values]
+    r_values = list(accumulate(r_values))
+    return r_values
 
-v1 = torch.tensor([0.0, 0.1, 0.2])
-direction = torch.tensor([0.1, 0.2, 0.3]) - v1
-direction = direction / torch.norm(direction) * 0.5  # Normalize to 0.5 distance
-v3 = v1 + direction
+for i in range(2,31):
+    rs = get_rs(i)
+    print(rs)
