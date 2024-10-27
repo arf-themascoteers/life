@@ -3,49 +3,17 @@ import accumulate_results
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
+from plot_commons import ALGS, FIXED_ALG_COLORS, ARBITRARY_ALG_COLORS, MARKERS, ALG_ORDERS
+from ds_manager import DSManager
 
-
-ALGS = {
-    "bnc": "BS-Net-Classifier [9]",
-    "c1": "BS-DSC",
-    "all": "All Bands",
-    "mcuve": "MCUVE [17]",
-    "bsnet": "BS-Net-FC [2]",
-    "pcal": "PCAL [16]",
-    "bsdr": "BSDR",
-    "bsdrattn": "BSDR-ATTN",
-    "linspacer": "Linearly Spaced",
-    "random": "Randomly Selected",
-}
+CLASSIFICATION_METRIC_LABELS = ["OA", "AA", r"$\kappa$"]
 
 DSS = {
     "indian_pines": "Indian Pines",
     "paviaU": "Pavia University",
     "salinas": "Salinas",
     "ghisaconus": "Ghisaconus",
-    "lucas_lc0_s_r": "LUCAS (land cover)",
-    "lucas_r": "LUCAS (SOC)",
-    "lucas_texture_r": "LUCAS (texture)",
 }
-
-FIXED_ALG_COLORS = {
-    "bnc": "#1f77b4",
-    "c1": "#d62728",
-    "all": "#2ca02c",
-    "mcuve": "#ff7f0e",
-    "bsnet": "#008000",
-    "pcal": "#9467bd",
-    "bsdr": "#7FFF00",
-    "bsdrattn": "#7F0000",
-    "linspacer": "#FF00FF",
-    "random": "#d6ff28",
-}
-
-ARBITRARY_ALG_COLORS = ["#000000","#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"]
-MARKERS = ['s', 'P', 'D', '^', 'o', '*', '.', 's', 'P', 'D', '^', 'o', '*', '.']
-METRIC_LABELS = ["OA", "AA", r"$\kappa$"]
-ALG_ORDERS = ["all", "random", "linspacer", "pcal", "mcuve", "bsnet", "bnc", "c1", "bsdr","bsdrattn"]
-
 
 def plot_algorithm(ax, algorithm, algorithm_index, metric, alg_df):
     algorithm_label = algorithm
@@ -83,7 +51,7 @@ def plot_metric(algorithms, metric, metric_index, dataset_index, dataset, ddf, a
         plot_algorithm(ax, algorithm, algorithm_index, metric, alg_df)
 
     ax.set_xlabel('Target size', fontsize=18)
-    ax.set_ylabel(METRIC_LABELS[metric_index], fontsize=18)
+    ax.set_ylabel(CLASSIFICATION_METRIC_LABELS[metric_index], fontsize=18)
     ax.set_ylim(min_lim, max_lim)
     ax.tick_params(axis='both', which='major', labelsize=14)
     ax.grid(True, linestyle='-', alpha=0.6)
@@ -111,6 +79,7 @@ def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=N
     dest = os.path.join(graphics_folder, dest)
     df = accumulate_results.accumulate_results(sources,excluded=exclude)
     datasets = df["dataset"].unique()
+    datasets = [d for d in datasets if DSManager.is_dataset_classification(d)]
     if only_datasets is not None:
         datasets = [d for d in datasets if d in only_datasets]
     fig, axes = plt.subplots(nrows=len(datasets), ncols=3, figsize=(18,6*len(datasets)))
@@ -138,7 +107,6 @@ def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=N
     #fig.tight_layout()
     #fig.subplots_adjust(wspace=0.3, hspace=0.5, top=0.95, bottom=0.15)
     plt.savefig(dest, bbox_inches='tight', pad_inches=0.05)
-    plt.show()
     plt.close(fig)
 
 
