@@ -129,7 +129,7 @@ class Algorithm_bsdrattn(Algorithm):
         else:
             self.criterion = torch.nn.MSELoss()
             self.class_size = 1
-            self.lr = 0.01
+            self.lr = 0.001
             self.total_epoch = 500
             m = 20
 
@@ -178,18 +178,20 @@ class Algorithm_bsdrattn(Algorithm):
             optimizer.step()
             self.report(epoch, loss.item())
 
-        return self, self.get_indices()
+        return self, self.selected_indices
 
     def get_weights_indices(self, channel_weights, bands):
         band_indx = (torch.argsort(channel_weights, descending=True)).tolist()
         ordered_bands = bands[band_indx]
-        return ordered_bands, ordered_bands[: self.target_size]
+        indices = ordered_bands * self.original_feature_size
+        indices = indices.to(torch.int64).tolist()
+        indices = list(dict.fromkeys(indices))
+        return indices, indices[: self.target_size]
 
     def write_columns(self):
         if not self.verbose:
             return
-        selected_bands = self.get_indices()
-        columns = ["epoch","loss","oa","aa","k"] + [f"band_{index+1}" for index in range(len(selected_bands))]
+        columns = ["epoch","loss","oa","aa","k","all_bands","all_weights"]
         print("".join([str(i).ljust(20) for i in columns]))
 
     def report(self, epoch, loss):
@@ -199,18 +201,12 @@ class Algorithm_bsdrattn(Algorithm):
             return
 
         oa, aa, k = evaluate_split(*self.dataset.get_a_fold(), self, classification=self.classification)
-        bands = self.get_indices()
-        self.reporter.report_epoch_bsdr(epoch, loss, oa, aa, k, bands)
-        cells = [epoch, loss, oa, aa, k] + bands
+        self.reporter.report_epoch_bsdr(epoch, loss, oa, aa, k, self.selected_indices)
+        cells = [epoch, loss, oa, aa, k]
         cells = [round(item, 5) if isinstance(item, float) else item for item in cells]
+        cells = cells + [",".join([str(i) for i in self.all_indices])]
+        cells = cells + [",".join([str(round(i,3)) for i in self.weights])]
         print("".join([str(i).ljust(20) for i in cells]))
-
-    def get_indices(self):
-        indices = torch.round(self.selected_indices * self.original_feature_size ).to(torch.int64).tolist()
-        return list(dict.fromkeys(indices))
-
-    def transform(self, X):
-        return X[:,self.get_indices()]
 
     def is_cacheable(self):
         return False
