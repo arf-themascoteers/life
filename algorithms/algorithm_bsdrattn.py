@@ -119,20 +119,24 @@ class Algorithm_bsdrattn(Algorithm):
         self.verbose = verbose
         self.target_size = target_size
         self.shortlist = self.target_size*3
-        if dataset.is_classification():
+        self.classification = dataset.is_classification()
+        if self.classification:
             self.criterion = torch.nn.CrossEntropyLoss()
             self.class_size = len(np.unique(self.dataset.get_bs_train_y()))
+            self.lr = 0.01
+            self.total_epoch = 500
         else:
             self.criterion = torch.nn.MSELoss()
             self.class_size = 1
-        self.lr = 0.001
+            self.lr = 0.01
+            self.total_epoch = 500
+            
         self.ann = ANN(dataset.get_name(), self.target_size, self.class_size, self.shortlist)
         self.ann.to(self.device)
         self.original_feature_size = self.dataset.get_bs_train_x().shape[1]
-        self.total_epoch = 500
         self.X_train = torch.tensor(self.dataset.get_bs_train_x(), dtype=torch.float32).to(self.device)
         ytype = torch.float32
-        if dataset.is_classification():
+        if self.classification:
             ytype = torch.int32
         self.y_train = torch.tensor(self.dataset.get_bs_train_y(), dtype=ytype).to(self.device)
 
@@ -141,7 +145,7 @@ class Algorithm_bsdrattn(Algorithm):
         self.write_columns()
         optimizer = torch.optim.Adam(self.ann.parameters(), lr=self.lr, weight_decay=self.lr/10)
         linterp = LinearInterpolationModule(self.X_train, self.device)
-        if self.dataset.is_classification():
+        if self.classification:
             y = self.y_train.type(torch.LongTensor).to(self.device)
         else:
             y = self.y_train
@@ -160,7 +164,7 @@ class Algorithm_bsdrattn(Algorithm):
             self.set_all_indices(all_bands)
             self.set_selected_indices(selected_bands)
             self.set_weights(mean_weight)
-            if not self.dataset.is_classification():
+            if not self.classification:
                 y_hat = y_hat.reshape(-1)
             mse_loss = self.criterion(y_hat, y)
             l1_loss = self.l1_loss(channel_weights)
@@ -198,7 +202,7 @@ class Algorithm_bsdrattn(Algorithm):
         if epoch%10 != 0:
             return
 
-        oa, aa, k = evaluate_split(*self.dataset.get_a_fold(), self)
+        oa, aa, k = evaluate_split(*self.dataset.get_a_fold(), self, classification=self.classification)
         bands = self.get_indices()
         self.reporter.report_epoch_bsdr(epoch, loss, oa, aa, k, bands)
         cells = [epoch, loss, oa, aa, k] + bands
