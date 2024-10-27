@@ -43,10 +43,18 @@ msobsdr lucas
 
 p3:
 
-bsdrattn - all db
+all classification - ip, pu
+remove bsdrattn
+
 
 p4:
 
-all classification
-remove bsdrattn
+bsdrattn - all db
 
+p5:
+
+all - salinas
+
+p6:
+
+all - ghisa
