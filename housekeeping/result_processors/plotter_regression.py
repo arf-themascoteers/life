@@ -65,7 +65,7 @@ def plot_metric(algorithms, metric, metric_index, dataset_index, dataset, ddf, a
         legend.get_title().set_fontweight('bold')
 
     if metric_index == 1:
-        ax.set_title(DSS[dataset], fontsize=20)
+        ax.set_title(DSS[dataset], fontsize=20, x=-0.1,y=1)
 
 
 def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=None,pending=False):

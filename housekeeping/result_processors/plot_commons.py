@@ -7,6 +7,8 @@ ALGS = {
     "pcal": "PCAL [16]",
     "bsdr": "BSDR",
     "bsdrattn": "BSDR-ATTN",
+    "c1_wo_dsc": "BS-DSC-EXCL",
+    "msobsdr": "MSO-BSDR",
     "linspacer": "Linearly Spaced",
     "random": "Randomly Selected",
 }
@@ -22,6 +24,8 @@ FIXED_ALG_COLORS = {
     "bsdrattn": "#7F0000",
     "linspacer": "#FF00FF",
     "random": "#d6ff28",
+    "c1_wo_dsc": "#bcbd22",
+    "msobsdr": "#17becf"
 }
 
 ARBITRARY_ALG_COLORS = ["#000000","#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"]
