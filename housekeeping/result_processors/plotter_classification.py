@@ -85,7 +85,7 @@ def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=N
     datasets = [d for d in datasets if DSManager.is_dataset_classification(d)]
     if only_datasets is not None:
         datasets = [d for d in datasets if d in only_datasets]
-    fig, axes = plt.subplots(nrows=len(datasets), ncols=3, figsize=(18,8*len(datasets)))
+    fig, axes = plt.subplots(nrows=len(datasets), ncols=3, figsize=(18,10*len(datasets)))
     for dataset_index, dataset in enumerate(datasets):
         ddf = df[df["dataset"] == dataset].copy()
         if len(ddf) == 0:
@@ -97,8 +97,11 @@ def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=N
         algorithms = ddf["algorithm"].unique()
         if only_algorithms is not None:
             algorithms = [a for a in algorithms if a in only_algorithms]
+
         if len(algorithms) == 0:
             continue
+
+        ddf = ddf[ddf['algorithm'].isin(algorithms)].copy()
 
         for metric_index, metric in enumerate(["oa", "aa", "k"]):
             if len(axes.shape) == 1:
