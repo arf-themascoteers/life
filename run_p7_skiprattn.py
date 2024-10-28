@@ -1,10 +1,10 @@
 from task_runner import TaskRunner
 
 if __name__ == '__main__':
-    tag = "msobsdr_only"
+    tag = "p4"
     tasks = {
-        "algorithms" : ["msobsdr"],
-        "datasets": ["indian_pines"],
+        "algorithms" : ["bsdrattn"],
+        "datasets": ["indian_pines","paviaU","salinas","ghisaconus","lucas_r"],
         "target_sizes" : list(range(2,31))
     }
     ev = TaskRunner(tasks,tag,skip_all_bands=True, verbose=False, test=False)
