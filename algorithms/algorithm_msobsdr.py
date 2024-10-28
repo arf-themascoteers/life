@@ -268,7 +268,8 @@ class Algorithm_msobsdr(Algorithm):
         print("".join([str(i).ljust(20) for i in cells]))
 
     def get_indices(self):
-        indices = torch.round(self.ann.get_ann_indices() * self.original_feature_size).to(torch.int64)
+        indices = self.ann.get_ann_indices().cpu().detach()
+        indices = torch.round(indices * self.original_feature_size).to(torch.int64)
         indices = torch.where(indices < 0, torch.tensor(0), indices)
         indices = torch.where(indices > self.original_feature_size-1, torch.tensor(self.original_feature_size-1), indices)
         return list(dict.fromkeys(indices))
