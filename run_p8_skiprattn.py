@@ -3,7 +3,7 @@ from task_runner import TaskRunner
 if __name__ == '__main__':
     tag = "p8"
     tasks = {
-        "algorithms" : ["lateattn"],
+        "algorithms" : ["stage3attn","lateattn"],
         "datasets": ["indian_pines","paviaU","salinas","ghisaconus","lucas_r"],
         "target_sizes" : list(range(2,31))
     }
