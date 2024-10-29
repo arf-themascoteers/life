@@ -59,7 +59,15 @@ p6:
 
 all (ex bsdrattn) - ghisa
 
+p7:
+
+skipattn,bsdrattn,lateattn,stage3attn - all DB
 
 p9:
 
 slmcuve,slpcal,slrfrog,slspa
+
+
+t1:
+(custom split)
+skipattn,bsdrattn,lateattn,stage3attn - all DB
