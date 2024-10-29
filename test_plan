@@ -59,13 +59,6 @@ p6:
 
 all (ex bsdrattn) - ghisa
 
-p7:
-
-skipattn - all db
-
-p8:
-
-stage3attn,lateattn - all db
 
 p9:
 
