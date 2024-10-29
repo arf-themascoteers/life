@@ -8,7 +8,7 @@ import train_test_evaluator
 
 
 class TaskRunner:
-    def __init__(self, task, tag="results", skip_all_bands=False, verbose=False, remove_bg=False, test=False):
+    def __init__(self, task, tag="results", skip_all_bands=False, verbose=False, remove_bg=False, test=False, split="bsnet"):
         torch.manual_seed(3)
         self.task = task
         self.skip_all_bands = skip_all_bands
@@ -18,10 +18,11 @@ class TaskRunner:
         self.tag = tag
         self.reporter = Reporter(self.tag, self.skip_all_bands)
         self.cache = pd.DataFrame(columns=["dataset","algorithm","cache_tag","oa","aa","k","time","selected_bands","selected_weights"])
+        self.split = split
 
     def evaluate(self):
         for dataset_name in self.task["datasets"]:
-            dataset = DSManager(name=dataset_name, test=self.test)
+            dataset = DSManager(name=dataset_name, test=self.test, split=self.split)
             if not self.skip_all_bands:
                 self.evaluate_for_all_features(dataset)
             for algorithm in self.task["algorithms"]:

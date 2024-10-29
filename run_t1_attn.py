@@ -7,5 +7,5 @@ if __name__ == '__main__':
         "datasets": ["indian_pines","paviaU","salinas","ghisaconus","lucas_r"],
         "target_sizes" : list(range(2,31))
     }
-    ev = TaskRunner(tasks,tag,skip_all_bands=False, verbose=False, test=False)
+    ev = TaskRunner(tasks,tag,skip_all_bands=False, verbose=False, test=False, split="custom")
     summary, details = ev.evaluate()
