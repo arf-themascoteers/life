@@ -71,8 +71,8 @@ class ANN(nn.Module):
         self.shortlist = shortlist
         init_vals = torch.linspace(0.001, 0.99, self.shortlist + 2)
         self.indices = nn.Parameter(
-            torch.tensor([ANN.inverse_sigmoid_torch(init_vals[i + 1]) for i in range(self.shortlist)],
-                         requires_grad=False).to(self.device))
+            torch.tensor([ANN.inverse_sigmoid_torch(init_vals[i + 1]) for i in range(self.shortlist)]).to(self.device))
+        self.indices.requires_grad = False
         self.weighter = nn.Sequential(
             nn.Linear(self.shortlist, 512),
             nn.ReLU(),
@@ -183,7 +183,7 @@ class Algorithm_skipattn(Algorithm):
     def get_weights_indices(self, channel_weights, bands):
         band_indx = (torch.argsort(channel_weights, descending=True)).tolist()
         ordered_bands = bands[band_indx]
-        indices = ordered_bands * self.original_feature_size
+        indices = torch.round(ordered_bands * self.original_feature_size)
         indices = indices.to(torch.int64).tolist()
         indices = list(dict.fromkeys(indices))
         return indices, indices[: self.target_size]
@@ -191,7 +191,8 @@ class Algorithm_skipattn(Algorithm):
     def write_columns(self):
         if not self.verbose:
             return
-        columns = ["epoch","loss","oa","aa","k","all_bands","all_weights"]
+        #columns = ["epoch","loss","oa","aa","k","all_bands","all_weights","shortlisted"]
+        columns = ["epoch","loss","oa","aa","k","all_bands","shortlisted"]
         print("".join([str(i).ljust(20) for i in columns]))
 
     def report(self, epoch, loss):
@@ -205,7 +206,8 @@ class Algorithm_skipattn(Algorithm):
         cells = [epoch, loss, oa, aa, k]
         cells = [round(item, 5) if isinstance(item, float) else item for item in cells]
         cells = cells + [",".join([str(i) for i in self.all_indices])]
-        cells = cells + ["------"+(",".join([str(round(i.item(),3)) for i in self.weights]))]
+        cells = cells + ["----"+",".join([str(round((torch.sigmoid(i)*self.original_feature_size).item())) for i in self.ann.indices])]
+        #cells = cells + ["------"+(",".join([str(round(i.item(),3)) for i in self.weights]))]
         print("".join([str(i).ljust(20) for i in cells]))
 
     def is_cacheable(self):
