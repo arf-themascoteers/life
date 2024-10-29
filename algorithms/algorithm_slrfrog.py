@@ -91,6 +91,7 @@ class ANN(nn.Module):
         num_params = sum(p.numel() for p in self.parameters() if p.requires_grad)
         print("Number of learnable parameters:", num_params)
 
+    def init_indices(self):
         selector = RandomFrog(n_features_to_select=self.shortlist, n_iterations=1000)
         selector.fit(self.dataset_object.get_bs_train_x(), self.dataset_object.get_bs_train_y())
         indices = selector.get_support(indices=True)
@@ -146,6 +147,7 @@ class Algorithm_slrfrog(Algorithm):
         self.y_train = torch.tensor(self.dataset.get_bs_train_y(), dtype=ytype).to(self.device)
 
     def get_selected_indices(self):
+        self.ann.init_indices()
         self.ann.train()
         self.write_columns()
         optimizer = torch.optim.Adam(self.ann.parameters(), lr=self.lr, weight_decay=self.lr/10)
