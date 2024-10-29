@@ -135,10 +135,12 @@ class Algorithm_lateattn(Algorithm):
             self.total_epoch = 500
             m = 20
 
+        self.original_feature_size = self.dataset.get_bs_train_x().shape[1]
         self.shortlist = self.target_size * m
+        if self.shortlist > self.original_feature_size:
+            self.shortlist = self.original_feature_size
         self.ann = ANN(dataset.get_name(), self.target_size, self.class_size, self.shortlist)
         self.ann.to(self.device)
-        self.original_feature_size = self.dataset.get_bs_train_x().shape[1]
         self.X_train = torch.tensor(self.dataset.get_bs_train_x(), dtype=torch.float32).to(self.device)
         ytype = torch.float32
         if self.classification:
