@@ -136,7 +136,7 @@ class Algorithm_bsdrattn(Algorithm):
         self.original_feature_size = self.dataset.get_bs_train_x().shape[1]
         self.shortlist = self.target_size * m
         if self.shortlist > self.original_feature_size:
-            self.shortlist = self.original_feature_size
+            self.shortlist = self.original_feature_size - 1
         self.ann = ANN(dataset.get_name(), self.target_size, self.class_size, self.shortlist)
         self.ann.to(self.device)
 
