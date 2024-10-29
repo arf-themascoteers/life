@@ -9,4 +9,3 @@ def delete_all_files(folder_path):
 
 delete_all_files("saved_graphics")
 delete_all_files("results")
-    
