@@ -98,7 +98,7 @@ class ANN(nn.Module):
         feature_ranking = np.argsort(feature_importance)[::-1]
         indices = feature_ranking[:self.shortlist]
         indices = indices/self.dataset_object.get_bs_train_x().shape[1]
-        self.indices = torch.tensor(indices).to(self.device)
+        self.indices = torch.tensor(indices, dtype=torch.float32).to(self.device)
 
     def forward(self, linterp, epoch, l0_norm):
         outputs = linterp(self.get_indices())
