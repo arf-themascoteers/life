@@ -91,6 +91,7 @@ class ANN(nn.Module):
         num_params = sum(p.numel() for p in self.parameters() if p.requires_grad)
         print("Number of learnable parameters:", num_params)
 
+    def init_indices(self):
         pca = PCA(n_components=self.shortlist)
         pca.fit(self.dataset_object.get_bs_train_x())
         loadings = pca.components_.T * np.sqrt(pca.explained_variance_)
@@ -138,10 +139,12 @@ class Algorithm_slpcal(Algorithm):
             self.total_epoch = 500
             m = 20
 
+        self.original_feature_size = self.dataset.get_bs_train_x().shape[1]
         self.shortlist = self.target_size * m
+        if self.shortlist > self.original_feature_size:
+            self.shortlist = self.original_feature_size - 1
         self.ann = ANN(dataset.get_name(), self.target_size, self.class_size, self.shortlist, self.dataset)
         self.ann.to(self.device)
-        self.original_feature_size = self.dataset.get_bs_train_x().shape[1]
         self.X_train = torch.tensor(self.dataset.get_bs_train_x(), dtype=torch.float32).to(self.device)
         ytype = torch.float32
         if self.classification:
@@ -149,6 +152,7 @@ class Algorithm_slpcal(Algorithm):
         self.y_train = torch.tensor(self.dataset.get_bs_train_y(), dtype=ytype).to(self.device)
 
     def get_selected_indices(self):
+        self.ann.init_indices()
         self.ann.train()
         self.write_columns()
         optimizer = torch.optim.Adam(self.ann.parameters(), lr=self.lr, weight_decay=self.lr/10)
