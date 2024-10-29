@@ -3,7 +3,7 @@ from task_runner import TaskRunner
 if __name__ == '__main__':
     tag = "t2"
     tasks = {
-        "algorithms" : ["skipattn","bsdrattn"],
+        "algorithms" : ["bsdrattn"],
         "datasets": ["indian_pines"],
         "target_sizes" : list(range(2,31))
     }
