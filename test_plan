@@ -43,7 +43,7 @@ msobsdr lucas
 
 p3:
 
-all classification - ip, pu
+all but bsdrattn classification - ip, pu
 remove bsdrattn
 
 
