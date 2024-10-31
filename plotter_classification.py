@@ -30,7 +30,10 @@ def plot_algorithm(ax, algorithm, props, algorithm_index, metric, alg_df):
     else:
         color = "#{:06x}".format(random.randint(0, 0xFFFFFF))#ARBITRARY_ALG_COLORS[algorithm_index]
 
-    marker = MARKERS[algorithm_index]
+    if algorithm_index > len(MARKERS) - 1:
+        marker = "--"
+    else:
+        marker = MARKERS[algorithm_index]
     if algorithm == "all":
         oa = alg_df.iloc[0]["oa"]
         aa = alg_df.iloc[0]["aa"]
