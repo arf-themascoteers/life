@@ -21,18 +21,13 @@ class Reporter:
         self.current_weight_all_report_file = None
         os.makedirs("results", exist_ok=True)
 
-        # for file in os.listdir("results"):
-        #     file_path = os.path.join("results", file)
-        #     if os.path.isfile(file_path):
-        #         os.remove(file_path)
-
         if not os.path.exists(self.summary_file):
             with open(self.summary_file, 'w') as file:
-                file.write("dataset,target_size,algorithm,time,oa,aa,k,selected_bands,selected_weights\n")
+                file.write("dataset,target_size,algorithm,props,time,oa,aa,k,selected_bands,selected_weights\n")
 
         if not os.path.exists(self.details_file):
             with open(self.details_file, 'w') as file:
-                file.write("dataset,target_size,algorithm,oa,aa,k,fold\n")
+                file.write("dataset,target_size,algorithm,props,oa,aa,k,fold\n")
 
         if self.skip_all_bands:
             return
@@ -70,14 +65,14 @@ class Reporter:
         selected_bands = selected_bands[indices]
         selected_weights = selected_weights[indices]
         with open(self.summary_file, 'a') as file:
-            file.write(f"{algorithm.dataset.get_name()},{algorithm.target_size},{algorithm.get_name()},"
+            file.write(f"{algorithm.dataset.get_name()},{algorithm.target_size},{algorithm.get_name()},{algorithm.get_props()},"
                        f"{time},{oa},{aa},{k},"
                        f"{'|'.join([str(i) for i in selected_bands])},"
                        f"{'|'.join([str(i) for i in selected_weights])}\n")
 
         with open(self.details_file, 'a') as file:
             for i in range(len(oas)):
-                file.write(f"{algorithm.dataset.get_name()},{algorithm.target_size},{algorithm.get_name()},"
+                file.write(f"{algorithm.dataset.get_name()},{algorithm.target_size},{algorithm.get_name()},{algorithm.get_props()},"
                        f"{round(oas[i],2)},{round(aas[i],2)},{round(ks[i],2)},{i}\n")
 
     def write_details_all_features(self, fold, name, oa, aa, k):
@@ -113,7 +108,7 @@ class Reporter:
         if len(df) == 0:
             return None
         rows = df.loc[(df["dataset"] == algorithm.dataset.get_name()) & (df["target_size"] == algorithm.target_size) &
-                      (df["algorithm"] == algorithm.get_name())
+                      (df["algorithm"] == algorithm.get_name() ) & (df["props"] == algorithm.get_props())
                       ]
         if len(rows) == 0:
             return None

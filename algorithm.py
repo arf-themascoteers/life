@@ -96,3 +96,6 @@ class Algorithm(ABC):
             return self.weights.tolist()
         return self.weights
 
+    def get_props(self):
+        return 0
+
