@@ -63,6 +63,10 @@ p7:
 
 skipattn,bsdrattn,lateattn,stage3attn - all DB
 
+p8
+
+bsdrattn2,skipattn2 - all DB
+
 ===========================================================
 
 p9:
@@ -76,7 +80,7 @@ skipattn,bsdrattn,lateattn,stage3attn - all DB
 
 m1:
 
-bsdr,c1,bsdrattn - all DB
+bsdr,c1,bsdrattn2,skipattn2 - all DB [2-150]
 
 ===
 bsdr3 best
