@@ -106,12 +106,14 @@ def plot(sources=None,exclude=None,only_algorithms=None,only_datasets=None,pendi
             algorithms = all_algorithms.tolist()
             propses = all_propses.tolist()
         else:
+            all_algorithms_list = all_algorithms.tolist()
+            all_propses_list = all_propses.tolist()
             algorithms = []
             propses = []
-            for index, algorithm in enumerate(all_algorithms):
+            for index, algorithm in enumerate(all_algorithms_list):
                 if algorithm in only_algorithms:
                     algorithms.append(algorithm)
-                    propses.append(all_propses[index])
+                    propses.append(all_propses_list[index])
 
         if len(algorithms) == 0:
             continue

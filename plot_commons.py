@@ -11,6 +11,8 @@ ALGS = {
     "msobsdr": "MSO-BSDR",
     "linspacer": "Linearly Spaced",
     "random": "Randomly Selected",
+    "bsdr3": "BSDR3",
+    "bsdr3ae": "BBDR3-AE",
 }
 
 FIXED_ALG_COLORS = {
@@ -25,9 +27,11 @@ FIXED_ALG_COLORS = {
     "linspacer": "#FF00FF",
     "random": "#d6ff28",
     "c1_wo_dsc": "#bcbd22",
-    "msobsdr": "#17becf"
+    "msobsdr": "#17becf",
+    "bsdr3": "#169ccb",
+    "bsdr3ae": "#4d6951",
 }
 
-ARBITRARY_ALG_COLORS = ["#000000","#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"]
-MARKERS = ['s', 'P', 'D', '^', 'o', '*', '.', 's', 'P', 'D', '^', 'o', '*', '.']
-ALG_ORDERS = ["all", "random", "linspacer", "pcal", "mcuve", "bsnet", "bnc", "c1", "bsdr","bsdrattn"]
+ARBITRARY_ALG_COLORS = ["#000000","#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf","#1a2b3c","#169ccb","#4d6951"]
+MARKERS = ['s', 'P', 'D', '^', 'o', '*', '.', 's', 'P', 'D', '^', 'o', '*', '.',"-","--","**"]
+ALG_ORDERS = ["all", "random", "linspacer", "pcal", "mcuve", "bsnet", "bnc", "c1", "bsdr","bsdrattn","bsdr3","bsdr3ae"]
