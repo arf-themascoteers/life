@@ -98,11 +98,20 @@ def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=N
         ddf = ddf.sort_values(["sort_order","props"]).drop(columns=["sort_order"])
 
         unique_combinations = df[['algorithm', 'props']].drop_duplicates()
-        algorithms = unique_combinations["algorithm"]
-        propses = unique_combinations["props"]
 
-        if only_algorithms is not None:
-            algorithms = [a for a in algorithms if a in only_algorithms]
+        all_algorithms = unique_combinations["algorithm"]
+        all_propses = unique_combinations["props"]
+        if only_algorithms is None:
+            algorithms = all_algorithms
+            propses = all_propses
+        else:
+            algorithms = []
+            propses = []
+            for index, algorithm in enumerate(all_algorithms):
+                if algorithm in only_algorithms:
+                    algorithms.append(algorithm)
+                    propses.append(all_propses[index])
+
         if len(algorithms) == 0:
             continue
 
