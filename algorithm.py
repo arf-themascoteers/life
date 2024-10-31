@@ -8,7 +8,7 @@ import numpy as np
 
 
 class Algorithm(ABC):
-    def __init__(self, target_size:int, dataset, tag, reporter, verbose, test=False):
+    def __init__(self, target_size:int, dataset, tag, reporter, verbose, test=False, props=None):
         self.target_size = target_size
         self.dataset = dataset
         self.tag = tag
@@ -19,11 +19,12 @@ class Algorithm(ABC):
         self.weights = None
         self.model = None
         self.all_indices = None
+        self.props = props
         self.reporter.create_epoch_report(tag, self.get_name(), self.dataset.get_name(), self.target_size)
         self.reporter.create_weight_report(tag, self.get_name(), self.dataset.get_name(), self.target_size)
         self.reporter.create_weight_all_report(tag, self.get_name(), self.dataset.get_name(), self.target_size)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+    
     def fit(self):
         self.model, self.selected_indices = self.get_selected_indices()
         return self.selected_indices
@@ -81,11 +82,11 @@ class Algorithm(ABC):
         return 0
 
     @staticmethod
-    def create(name, target_size, dataset, tag, reporter, verbose, test):
+    def create(name, target_size, dataset, tag, reporter, verbose, test, props):
         class_name = f"Algorithm_{name}"
         module = importlib.import_module(f"algorithms.algorithm_{name}")
         clazz = getattr(module, class_name)
-        return clazz(target_size, dataset, tag, reporter, verbose, test)
+        return clazz(target_size, dataset, tag, reporter, verbose, test, props)
 
     def set_weights(self, mean_weight):
         self.weights = mean_weight

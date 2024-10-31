@@ -61,8 +61,8 @@ class ZhangNet(nn.Module):
 
 
 class Algorithm_c1_wo_dsc(Algorithm):
-    def __init__(self, target_size:int, dataset, tag, reporter, verbose, test):
-        super().__init__(target_size, dataset, tag, reporter, verbose, test)
+    def __init__(self, target_size:int, dataset, tag, reporter, verbose, test, props):
+        super().__init__(target_size, dataset, tag, reporter, verbose, test, props)
         if dataset.is_classification():
             self.criterion = torch.nn.CrossEntropyLoss()
             self.class_size = len(np.unique(self.dataset.get_bs_train_y()))

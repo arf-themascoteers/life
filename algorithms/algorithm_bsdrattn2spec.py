@@ -71,8 +71,8 @@ class ANN(nn.Module):
         self.shortlist = shortlist
         init_vals = torch.linspace(0.001, 0.99, self.shortlist + 2)
         self.indices = nn.Parameter(
-            torch.tensor([ANN.inverse_sigmoid_torch(init_vals[i + 1]) for i in range(self.shortlist)]).to(self.device))
-        self.indices.requires_grad = False
+            torch.tensor([ANN.inverse_sigmoid_torch(init_vals[i + 1]) for i in range(self.shortlist)],
+                         requires_grad=True).to(self.device))
         self.weighter = nn.Sequential(
             nn.Linear(self.shortlist, 512),
             nn.ReLU(),
@@ -109,7 +109,7 @@ class ANN(nn.Module):
         return torch.sigmoid(self.indices)
 
 
-class Algorithm_skipattn2(Algorithm):
+class Algorithm_bsdrattn2spec(Algorithm):
     def __init__(self, target_size, dataset, tag, reporter, verbose, test, props):
         super().__init__(target_size, dataset, tag, reporter, verbose, test, props)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -118,6 +118,7 @@ class Algorithm_skipattn2(Algorithm):
         torch.backends.cudnn.deterministic = True
         self.verbose = verbose
         self.target_size = target_size
+        self.shortlist = self.props["shortlist"]
         self.classification = dataset.is_classification()
 
         if self.classification:
@@ -125,20 +126,16 @@ class Algorithm_skipattn2(Algorithm):
             self.class_size = len(np.unique(self.dataset.get_bs_train_y()))
             self.lr = 0.01
             self.total_epoch = 500
-            m = 5
         else:
             self.criterion = torch.nn.MSELoss()
             self.class_size = 1
             self.lr = 0.001
             self.total_epoch = 500
-            m = 20
 
         self.original_feature_size = self.dataset.get_bs_train_x().shape[1]
-        self.shortlist = self.target_size * m
-        if self.shortlist > self.original_feature_size/3:
-            self.shortlist = int(self.original_feature_size/3)
         self.ann = ANN(dataset.get_name(), self.target_size, self.class_size, self.shortlist)
         self.ann.to(self.device)
+
         self.X_train = torch.tensor(self.dataset.get_bs_train_x(), dtype=torch.float32).to(self.device)
         ytype = torch.float32
         if self.classification:

@@ -25,10 +25,13 @@ class TaskRunner:
             dataset = DSManager(name=dataset_name, test=self.test, split=self.split)
             if not self.skip_all_bands:
                 self.evaluate_for_all_features(dataset)
-            for algorithm in self.task["algorithms"]:
+            for index, algorithm in enumerate(self.task["algorithms"]):
+                props = None
+                if "props" in self.task:
+                    props = self.task["props"][index]
                 for target_size in self.task["target_sizes"]:
                     print(dataset_name, algorithm, target_size)
-                    algorithm_object = Algorithm.create(algorithm, target_size, dataset, self.tag, self.reporter, self.verbose, self.test)
+                    algorithm_object = Algorithm.create(algorithm, target_size, dataset, self.tag, self.reporter, self.verbose, self.test, props)
                     self.process_a_case(algorithm_object)
 
         self.reporter.save_results()

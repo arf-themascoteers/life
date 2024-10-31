@@ -6,8 +6,8 @@ import numpy as np
 
 
 class Algorithm_pcal(Algorithm):
-    def __init__(self, target_size:int, dataset, tag, reporter, verbose, test):
-        super().__init__(target_size, dataset, tag, reporter, verbose, test)
+    def __init__(self, target_size:int, dataset, tag, reporter, verbose, test, props):
+        super().__init__(target_size, dataset, tag, reporter, verbose, test, props)
 
     def get_selected_indices(self):
         pca = PCA(n_components=self.target_size)

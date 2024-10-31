@@ -49,8 +49,8 @@ class BSNetFC(nn.Module):
 
 
 class Algorithm_bsnet(Algorithm):
-    def __init__(self, target_size:int, dataset, tag, reporter, verbose, test):
-        super().__init__(target_size, dataset, tag, reporter, verbose, test)
+    def __init__(self, target_size:int, dataset, tag, reporter, verbose, test, props):
+        super().__init__(target_size, dataset, tag, reporter, verbose, test, props)
         self.criterion = torch.nn.MSELoss(reduction='sum')
         self.epoch = -1
         x,y = self.dataset.get_bs_train_x_y()

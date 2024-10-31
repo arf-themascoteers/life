@@ -5,8 +5,8 @@ import numpy as np
 
 
 class Algorithm_mcuve(Algorithm):
-    def __init__(self, target_size:int, dataset, tag, reporter, verbose, test):
-        super().__init__(target_size, dataset, tag, reporter, verbose, test)
+    def __init__(self, target_size:int, dataset, tag, reporter, verbose, test, props):
+        super().__init__(target_size, dataset, tag, reporter, verbose, test, props)
 
     def get_selected_indices(self):
         selector = MCUVE(n_features_to_select=self.target_size)
