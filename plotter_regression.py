@@ -14,6 +14,7 @@ DSS = {
 }
 
 def plot_algorithm(ax, algorithm, props, algorithm_index, metric, alg_df):
+    props = int(props)
     algorithm_label = algorithm
     if algorithm in ALGS:
         algorithm_label = ALGS[algorithm]
@@ -35,6 +36,7 @@ def plot_algorithm(ax, algorithm, props, algorithm_index, metric, alg_df):
         linestyle = "--"
         color = "#000000"
         marker = None
+    print(algorithm_label, props)
     ax.plot(alg_df['target_size'], alg_df[metric],
                                      label=algorithm_label,
                                      color=color,
@@ -45,8 +47,6 @@ def plot_metric(algorithms, propses, metric, metric_index, dataset_index, datase
     ddf[metric] = ddf[metric].clip(lower=0)
     min_lim = max(ddf[metric].min() - 0.02,0)
     max_lim = min(ddf[metric].max() + 0.02,1)
-
-    print(min_lim, max_lim, metric)
 
     for algorithm_index, algorithm in enumerate(algorithms):
         props = propses[algorithm_index]
