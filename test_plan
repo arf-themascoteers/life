@@ -73,6 +73,10 @@ p9:
 
 slmcuve,slpcal,slrfrog,slspa - all DB
 
+p10:
+
+bsdrattn2spec[10,[10,100]] - indian pines
+
 
 t1: ---- failed
 (custom split)
