@@ -106,8 +106,8 @@ def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=N
         all_algorithms = unique_combinations["algorithm"]
         all_propses = unique_combinations["props"]
         if only_algorithms is None:
-            algorithms = all_algorithms
-            propses = all_propses
+            algorithms = all_algorithms.tolist()
+            propses = all_propses.tolist()
         else:
             algorithms = []
             propses = []
