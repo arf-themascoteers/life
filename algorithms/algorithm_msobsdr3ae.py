@@ -83,7 +83,7 @@ class Agent(nn.Module):
             r_loss = r_loss + r2_loss
 
         successive_loss = torch.sum(torch.stack([torch.relu(self.raw_indices[i] - self.raw_indices[i + 1]) for i in range(len(self.raw_indices) - 1)]))
-        return output, loss, r_loss, successive_loss
+        return X_hat, loss, r_loss, successive_loss
 
     def get_indices(self):
         return torch.sigmoid(self.raw_indices)
@@ -124,7 +124,7 @@ class ANN(nn.Module):
 
     def get_best(self, outputs, y):
         r2s = torch.tensor([r2_score_torch(y, y_i) for y_i in outputs], dtype=torch.float32)
-        print([round(r.item(),5) for r in r2s])
+        #print([round(r.item(),5) for r in r2s])
         return torch.argmax(r2s)
 
 
@@ -138,7 +138,7 @@ class ANN(nn.Module):
         loss = torch.sum(losses) + 70*torch.sum(r_losses) + 40*torch.sum(successive_loss)
 
 
-        if True:
+        if False:
             ls = [str(round(l.item(),5)) for l in losses]
             ls = "\t".join(ls)
 
@@ -177,14 +177,9 @@ class Algorithm_msobsdr3ae(Algorithm):
         self.verbose = verbose
         self.target_size = target_size
         self.classification = dataset.is_classification()
-        if self.classification:
-            self.class_size = len(np.unique(self.dataset.get_bs_train_y()))
-            self.lr = 0.01
-            self.total_epoch = 1000
-        else:
-            self.class_size = 1
-            self.lr = 0.001
-            self.total_epoch = 1000
+        self.class_size = 1
+        self.lr = 0.001
+        self.total_epoch = 1000
         self.original_feature_size = self.dataset.get_bs_train_x().shape[1]
         self.ann = ANN(self.target_size, self.class_size, self.original_feature_size, self.classification)
         self.ann.to(self.device)
