@@ -6,13 +6,10 @@ import os
 from plot_commons import ALGS, FIXED_ALG_COLORS, ARBITRARY_ALG_COLORS, MARKERS, ALG_ORDERS
 from ds_manager import DSManager
 
-CLASSIFICATION_METRIC_LABELS = ["OA", "AA", r"$\kappa$"]
+REGRESSION_METRIC_LABELS = [r"$R^2$", "RMSE"]
 
 DSS = {
-    "indian_pines": "Indian Pines",
-    "paviaU": "Pavia University",
-    "salinas": "Salinas",
-    "ghisaconus": "Ghisaconus",
+    "lucas_r": "LUCAS"
 }
 
 def plot_algorithm(ax, algorithm, algorithm_index, metric, alg_df):
@@ -29,11 +26,10 @@ def plot_algorithm(ax, algorithm, algorithm_index, metric, alg_df):
 
     marker = MARKERS[algorithm_index]
     if algorithm == "all":
-        oa = alg_df.iloc[0]["oa"]
-        aa = alg_df.iloc[0]["aa"]
-        k = alg_df.iloc[0]["k"]
+        r2 = alg_df.iloc[0]["oa"]
+        rmse = alg_df.iloc[0]["aa"]
         alg_df = pd.DataFrame(
-            {'target_size': range(5, 31), 'oa': [oa] * 26, 'aa': [aa] * 26, 'k': [k] * 26})
+            {'target_size': range(5, 31), 'oa': [r2] * 26, 'aa': [rmse] * 26, 'k': [0] * 26})
         linestyle = "--"
         color = "#000000"
         marker = None
@@ -44,14 +40,18 @@ def plot_algorithm(ax, algorithm, algorithm_index, metric, alg_df):
 
 
 def plot_metric(algorithms, metric, metric_index, dataset_index, dataset, ddf, ax):
-    min_lim = min(ddf["oa"].min(), ddf["aa"].min(), ddf["k"].min()) - 0.02
-    max_lim = max(ddf["oa"].max(), ddf["aa"].max(), ddf["k"].max()) + 0.02
+    ddf[metric] = ddf[metric].clip(lower=0)
+    min_lim = max(ddf[metric].min() - 0.02,0)
+    max_lim = min(ddf[metric].max() + 0.02,1)
+
+    print(min_lim, max_lim, metric)
+
     for algorithm_index, algorithm in enumerate(algorithms):
         alg_df = ddf[ddf["algorithm"] == algorithm]
         plot_algorithm(ax, algorithm, algorithm_index, metric, alg_df)
 
     ax.set_xlabel('Target size', fontsize=18)
-    ax.set_ylabel(CLASSIFICATION_METRIC_LABELS[metric_index], fontsize=18)
+    ax.set_ylabel(REGRESSION_METRIC_LABELS[metric_index], fontsize=18)
     ax.set_ylim(min_lim, max_lim)
     ax.tick_params(axis='both', which='major', labelsize=14)
     ax.grid(True, linestyle='-', alpha=0.6)
@@ -65,7 +65,7 @@ def plot_metric(algorithms, metric, metric_index, dataset_index, dataset, ddf, a
         legend.get_title().set_fontweight('bold')
 
     if metric_index == 1:
-        ax.set_title(DSS[dataset], fontsize=20)
+        ax.set_title(DSS[dataset], fontsize=20, x=-0.1,y=1)
 
 
 def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=None,pending=False):
@@ -80,12 +80,12 @@ def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=N
     os.makedirs(graphics_folder, exist_ok=True)
     dest = f"image_{int(time.time())}.png"
     dest = os.path.join(graphics_folder, dest)
-    df = accumulate_results.accumulate_results(sources,excluded=exclude, pending=pending)
+    df = accumulate_results.accumulate_results(sources, excluded=exclude, pending=pending)
     datasets = df["dataset"].unique()
-    datasets = [d for d in datasets if DSManager.is_dataset_classification(d)]
+    datasets = [d for d in datasets if not DSManager.is_dataset_classification(d)]
     if only_datasets is not None:
         datasets = [d for d in datasets if d in only_datasets]
-    fig, axes = plt.subplots(nrows=len(datasets), ncols=3, figsize=(18,10*len(datasets)))
+    fig, axes = plt.subplots(nrows=len(datasets), ncols=2, figsize=(18,6*len(datasets)))
     for dataset_index, dataset in enumerate(datasets):
         ddf = df[df["dataset"] == dataset].copy()
         if len(ddf) == 0:
@@ -97,25 +97,20 @@ def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=N
         algorithms = ddf["algorithm"].unique()
         if only_algorithms is not None:
             algorithms = [a for a in algorithms if a in only_algorithms]
-
         if len(algorithms) == 0:
             continue
 
-        ddf = ddf[ddf['algorithm'].isin(algorithms)].copy()
-
-        for metric_index, metric in enumerate(["oa", "aa", "k"]):
+        for metric_index, metric in enumerate(["oa", "aa"]):
             if len(axes.shape) == 1:
                 ax = axes[metric_index]
             else:
                 ax = axes[dataset_index, metric_index]
             plot_metric(algorithms, metric, metric_index, dataset_index, dataset, ddf, ax)
 
-    #fig.tight_layout()
-    #fig.subplots_adjust(wspace=0.3, hspace=0.5, top=0.95, bottom=0.15)
     plt.savefig(dest, bbox_inches='tight', pad_inches=0.05)
     plt.close(fig)
 
 
 if __name__ == "__main__":
-    plot_combined(sources=["bsdr","bsdrattn"], only_algorithms=["bsdr","bsdrattn","c1"], only_datasets=["indian_pines"])
+    plot_combined(sources=["r1"])
 
