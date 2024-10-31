@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import os
 from plot_commons import ALGS, FIXED_ALG_COLORS, ARBITRARY_ALG_COLORS, MARKERS, ALG_ORDERS
 from ds_manager import DSManager
+import random
 
 REGRESSION_METRIC_LABELS = [r"$R^2$", "RMSE"]
 
@@ -12,17 +13,18 @@ DSS = {
     "lucas_r": "LUCAS"
 }
 
-def plot_algorithm(ax, algorithm, algorithm_index, metric, alg_df):
+def plot_algorithm(ax, algorithm, props, algorithm_index, metric, alg_df):
     algorithm_label = algorithm
     if algorithm in ALGS:
         algorithm_label = ALGS[algorithm]
-
+    if props !=0 :
+        algorithm_label = f"{algorithm_label}({props})"
     alg_df = alg_df.sort_values(by='target_size')
     linestyle = "-"
     if algorithm in FIXED_ALG_COLORS:
         color = FIXED_ALG_COLORS[algorithm]
     else:
-        color = ARBITRARY_ALG_COLORS[algorithm_index]
+        color = "#{:06x}".format(random.randint(0, 0xFFFFFF))
 
     marker = MARKERS[algorithm_index]
     if algorithm == "all":
@@ -39,7 +41,7 @@ def plot_algorithm(ax, algorithm, algorithm_index, metric, alg_df):
                                      fillstyle='none', markersize=7, linewidth=2, linestyle=linestyle)
 
 
-def plot_metric(algorithms, metric, metric_index, dataset_index, dataset, ddf, ax):
+def plot_metric(algorithms, propses, metric, metric_index, dataset_index, dataset, ddf, ax):
     ddf[metric] = ddf[metric].clip(lower=0)
     min_lim = max(ddf[metric].min() - 0.02,0)
     max_lim = min(ddf[metric].max() + 0.02,1)
@@ -47,8 +49,9 @@ def plot_metric(algorithms, metric, metric_index, dataset_index, dataset, ddf, a
     print(min_lim, max_lim, metric)
 
     for algorithm_index, algorithm in enumerate(algorithms):
-        alg_df = ddf[ddf["algorithm"] == algorithm]
-        plot_algorithm(ax, algorithm, algorithm_index, metric, alg_df)
+        props = propses[algorithm_index]
+        alg_df = ddf[(ddf["algorithm"] == algorithm) & (ddf["props"] == props)]
+        plot_algorithm(ax, algorithm, props, algorithm_index, metric, alg_df)
 
     ax.set_xlabel('Target size', fontsize=18)
     ax.set_ylabel(REGRESSION_METRIC_LABELS[metric_index], fontsize=18)
@@ -92,9 +95,12 @@ def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=N
             continue
 
         ddf["sort_order"] = ddf["algorithm"].apply(lambda x: ALG_ORDERS.index(x) if x in ALG_ORDERS else len(ALG_ORDERS) + ord(x[0]))
-        ddf = ddf.sort_values("sort_order").drop(columns=["sort_order"])
+        ddf = ddf.sort_values(["sort_order","props"]).drop(columns=["sort_order"])
 
-        algorithms = ddf["algorithm"].unique()
+        unique_combinations = df[['algorithm', 'props']].drop_duplicates()
+        algorithms = unique_combinations["algorithm"]
+        propses = unique_combinations["props"]
+
         if only_algorithms is not None:
             algorithms = [a for a in algorithms if a in only_algorithms]
         if len(algorithms) == 0:
@@ -105,7 +111,7 @@ def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=N
                 ax = axes[metric_index]
             else:
                 ax = axes[dataset_index, metric_index]
-            plot_metric(algorithms, metric, metric_index, dataset_index, dataset, ddf, ax)
+            plot_metric(algorithms, propses, metric, metric_index, dataset_index, dataset, ddf, ax)
 
     plt.savefig(dest, bbox_inches='tight', pad_inches=0.05)
     plt.close(fig)
