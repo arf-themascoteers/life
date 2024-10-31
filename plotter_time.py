@@ -6,6 +6,7 @@ import os
 from plot_commons import ALGS, FIXED_ALG_COLORS, ARBITRARY_ALG_COLORS, MARKERS, ALG_ORDERS
 from ds_manager import DSManager
 import random
+from matplotlib.ticker import LogLocator, LogFormatter
 
 DSS = {
     "indian_pines": "Indian Pines",
@@ -33,8 +34,6 @@ def plot_algorithm(ax, algorithm, props, algorithm_index, alg_df):
         marker = "--"
     else:
         marker = MARKERS[algorithm_index]
-
-    print(algorithm_label)
     ax.plot(alg_df['target_size'], alg_df["time"],
                                      label=algorithm_label,
                                      color=color,
@@ -42,27 +41,24 @@ def plot_algorithm(ax, algorithm, props, algorithm_index, alg_df):
 
 
 def plot_metric(algorithms, propses, dataset_index, dataset, ddf, ax):
-    min_lim = min(ddf["oa"].min(), ddf["aa"].min(), ddf["k"].min()) - 0.02
-    max_lim = max(ddf["oa"].max(), ddf["aa"].max(), ddf["k"].max()) + 0.02
+    ax.set_xlabel('Target size', fontsize=18)
+    ax.set_ylabel('Time', fontsize=18)
+    ax.set_yscale("log",base=10)
+
     for algorithm_index, algorithm in enumerate(algorithms):
         props = propses[algorithm_index]
         alg_df = ddf[(ddf["algorithm"] == algorithm) & (ddf["props"] == props)]
         plot_algorithm(ax, algorithm, props, algorithm_index, alg_df)
 
-    ax.set_xlabel('Target size', fontsize=18)
-    ax.set_ylabel('Time', fontsize=18)
-    ax.set_ylim(min_lim, max_lim)
-    ax.tick_params(axis='both', which='major', labelsize=14)
-    ax.grid(True, linestyle='-', alpha=0.6)
+    # ax.yaxis.set_major_locator(LogLocator(base=10))
+    # ax.yaxis.set_major_formatter(LogFormatter(base=10))
+    #ax.tick_params(axis='both', which='major', labelsize=14)
+    #ax.grid(True, linestyle='-', alpha=0.6)
 
     if dataset_index == 0:
-        # legend = ax.legend(loc='upper left', fontsize=12, ncols=6,
-        #                    bbox_to_anchor=(0, 1.35),
-        #                    columnspacing=3.8, frameon=True)
         legend = ax.legend(loc='upper left', ncols=5,bbox_to_anchor=(0, 1.3))
         legend.get_title().set_fontsize('12')
         legend.get_title().set_fontweight('bold')
-
     ax.set_title(DSS[dataset], fontsize=20)
 
 
@@ -119,14 +115,9 @@ def plot(sources=None,exclude=None,only_algorithms=None,only_datasets=None,pendi
 
         ddf = ddf.merge(unique_combinations, on=['algorithm', 'props'], how='inner').copy().reset_index(drop=True)
 
-        if len(axes.shape) == 1:
-            ax = axes[0]
-        else:
-            ax = axes[dataset_index, 0]
+        ax = axes[dataset_index]
         plot_metric(algorithms, propses, dataset_index, dataset, ddf, ax)
 
-    #fig.tight_layout()
-    #fig.subplots_adjust(wspace=0.3, hspace=0.5, top=0.95, bottom=0.15)
     plt.savefig(dest, bbox_inches='tight', pad_inches=0.05)
     plt.close(fig)
 
