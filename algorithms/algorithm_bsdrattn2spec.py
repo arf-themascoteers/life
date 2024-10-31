@@ -143,7 +143,6 @@ class Algorithm_bsdrattn2spec(Algorithm):
         self.y_train = torch.tensor(self.dataset.get_bs_train_y(), dtype=ytype).to(self.device)
 
     def get_selected_indices(self):
-        self.total_epoch = 1
         self.ann.train()
         self.write_columns()
         optimizer = torch.optim.Adam(self.ann.parameters(), lr=self.lr, weight_decay=self.lr/10)
