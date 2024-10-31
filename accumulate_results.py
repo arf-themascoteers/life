@@ -7,10 +7,10 @@ def accumulate_results(sources, dest=None, excluded = None, pending=False):
         dest = "dummy.csv"
     if excluded is None:
         excluded = []
-    source_folder = "../../saved_results"
+    source_folder = "saved_results"
     if pending:
-        source_folder = "../../results"
-    dest_folder = "../../acc_results"
+        source_folder = "results"
+    dest_folder = "acc_results"
 
     sources = [os.path.join(source_folder, source) for source in sources if source not in excluded]
     dest = os.path.join(dest_folder, dest)
