@@ -24,6 +24,9 @@ def plot_algorithm(ax, algorithm, props, algorithm_index, alg_df):
     if props !=0 :
         algorithm_label = f"{algorithm_label}({props})"
     alg_df = alg_df.sort_values(by='target_size')
+    non_zero = alg_df[alg_df["time"] != 0].iloc[0]["time"]
+    alg_df = alg_df.copy().reset_index(drop=True)
+    alg_df.loc[alg_df['time'] == 0, 'time'] = non_zero
     linestyle = "-"
     if algorithm in FIXED_ALG_COLORS:
         color = FIXED_ALG_COLORS[algorithm]
