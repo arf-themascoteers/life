@@ -69,18 +69,18 @@ def plot_metric(algorithms, metric, metric_index, dataset_index, dataset, ddf, a
 
 
 def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=None,pending=False):
-    resource = "../../saved_results"
+    resource = "saved_results"
     if pending:
-        resource = "../../results"
+        resource = "results"
     if exclude is None:
         exclude = []
     if sources is None:
         sources = os.listdir(resource)
-    graphics_folder = "../../saved_graphics"
+    graphics_folder = "saved_graphics"
     os.makedirs(graphics_folder, exist_ok=True)
     dest = f"image_{int(time.time())}.png"
     dest = os.path.join(graphics_folder, dest)
-    df = accumulate_results.accumulate_results(sources,excluded=exclude, pending=pending)
+    df = accumulate_results.accumulate_results(sources, excluded=exclude, pending=pending)
     datasets = df["dataset"].unique()
     datasets = [d for d in datasets if not DSManager.is_dataset_classification(d)]
     if only_datasets is not None:
