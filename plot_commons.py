@@ -34,6 +34,10 @@ FIXED_ALG_COLORS = {
     "bsdr3ae": "#4d6951",
     "bsdrattn2": "#97c415",
     "skipattn2": "#c8117e",
+    "bsdr3ae2":"#ff7f0e",
+    "bsdr3ae3":"#1f77b4",
+    "msobsdr3ae":"#d62728"
+
 }
 
 ARBITRARY_ALG_COLORS = ["#000000","#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf","#1a2b3c","#169ccb","#4d6951"]
