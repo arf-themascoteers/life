@@ -6,6 +6,7 @@ from train_test_evaluator import evaluate_split
 from torch.jit import fork, wait
 import math
 from itertools import accumulate
+import matplotlib.pyplot as plt
 
 
 def r2_score_torch(y, y_pred):
@@ -57,10 +58,16 @@ class Agent(nn.Module):
             torch.tensor([Agent.inverse_sigmoid_torch(init_vals[i + 1]) for i in range(self.target_size)],
                          requires_grad=True).to(self.device))
         self.linear = nn.Sequential(
-            nn.Linear(self.target_size, 32),
-            nn.BatchNorm1d(32),
+            nn.Linear(self.target_size, 64),
+            nn.BatchNorm1d(64),
             nn.ReLU(),
-            nn.Linear(32, self.original_size),
+            nn.Linear(64, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Linear(128, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(),
+            nn.Linear(256, self.original_size),
             nn.BatchNorm1d(self.original_size),
             nn.Sigmoid()
         )
@@ -128,14 +135,26 @@ class ANN(nn.Module):
         return torch.argmax(r2s)
 
 
-    def forward(self, linterp, y):
+    def forward(self, linterp, y, epoch):
         futures = [fork(linear, linterp, y) for linear in self.agents]
         outputs, losses, r_losses, successive_loss = zip(*[wait(future) for future in futures])
         losses = torch.stack(losses)
         r_losses = torch.stack(r_losses)
         successive_loss = torch.stack(successive_loss)
         self.best = self.get_best(outputs, y)
-        loss = torch.sum(losses) + 70*torch.sum(r_losses) + 40*torch.sum(successive_loss)
+
+        best_output = outputs[self.best]
+        sample_input = y[11].detach().cpu().numpy()
+        sample_output = best_output[11].detach().cpu().numpy()
+
+        if epoch%10 == 0:
+            fig, (ax1, ax2) = plt.subplots(1, 2)
+            ax1.plot(sample_input)
+            ax2.plot(sample_output)
+            plt.savefig(f"saved_graphics/{epoch}.png")
+            plt.close()
+
+        loss = torch.mean(losses) + 70*torch.sum(r_losses) + 40*torch.sum(successive_loss)
 
 
         if False:
@@ -179,7 +198,7 @@ class Algorithm_msobsdr3ae(Algorithm):
         self.classification = dataset.is_classification()
         self.class_size = 1
         self.lr = 0.001
-        self.total_epoch = 1000
+        self.total_epoch = 500
         self.original_feature_size = self.dataset.get_bs_train_x().shape[1]
         self.ann = ANN(self.target_size, self.class_size, self.original_feature_size, self.classification)
         self.ann.to(self.device)
@@ -198,7 +217,7 @@ class Algorithm_msobsdr3ae(Algorithm):
         linterp = LinearInterpolationModule(self.X_train, self.device)
         for epoch in range(self.total_epoch):
             optimizer.zero_grad()
-            loss = self.ann(linterp, self.X_train)
+            loss = self.ann(linterp, self.X_train, epoch)
             loss.backward()
             optimizer.step()
             r2_train = 0
