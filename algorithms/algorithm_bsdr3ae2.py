@@ -112,12 +112,12 @@ class Algorithm_bsdr3ae2(Algorithm):
             sample_input = self.X_train[10].detach().cpu().numpy()
             sample_output = X_hat[10].detach().cpu().numpy()
 
-            if epoch % 10 == 0:
-                fig, (ax1, ax2) = plt.subplots(1, 2)
-                ax1.plot(sample_input)
-                ax2.plot(sample_output)
-                plt.savefig(f"saved_graphics/b{epoch}.png")
-                plt.close()
+            # if epoch % 10 == 0:
+            #     fig, (ax1, ax2) = plt.subplots(1, 2)
+            #     ax1.plot(sample_input)
+            #     ax2.plot(sample_output)
+            #     plt.savefig(f"saved_graphics/b{epoch}.png")
+            #     plt.close()
 
             loss = self.criterion(X_hat, self.X_train)
             loss.backward()

@@ -147,12 +147,12 @@ class ANN(nn.Module):
         sample_input = y[11].detach().cpu().numpy()
         sample_output = best_output[11].detach().cpu().numpy()
 
-        if epoch%10 == 0:
-            fig, (ax1, ax2) = plt.subplots(1, 2)
-            ax1.plot(sample_input)
-            ax2.plot(sample_output)
-            plt.savefig(f"saved_graphics/{epoch}.png")
-            plt.close()
+        # if epoch%10 == 0:
+        #     fig, (ax1, ax2) = plt.subplots(1, 2)
+        #     ax1.plot(sample_input)
+        #     ax2.plot(sample_output)
+        #     plt.savefig(f"saved_graphics/{epoch}.png")
+        #     plt.close()
 
         loss = torch.mean(losses) + 70*torch.sum(r_losses) + 40*torch.sum(successive_loss)
 
