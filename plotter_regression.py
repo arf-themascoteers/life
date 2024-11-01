@@ -39,7 +39,6 @@ def plot_algorithm(ax, algorithm, props, algorithm_index, metric, alg_df):
         linestyle = "--"
         color = "#000000"
         marker = None
-    print(algorithm_label, props)
     ax.plot(alg_df['target_size'], alg_df[metric],
                                      label=algorithm_label,
                                      color=color,

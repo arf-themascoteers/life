@@ -12,7 +12,9 @@ ALGS = {
     "linspacer": "Linearly Spaced",
     "random": "Randomly Selected",
     "bsdr3": "BSDR3",
-    "bsdr3ae": "BBDR3-AE",
+    "bsdr3ae": "BSDR3-AE",
+    "bsdrattn2": "BSDR-ATTN2",
+    "skipattn2": "Skip-ATTN2",
 }
 
 FIXED_ALG_COLORS = {
@@ -30,6 +32,8 @@ FIXED_ALG_COLORS = {
     "msobsdr": "#17becf",
     "bsdr3": "#169ccb",
     "bsdr3ae": "#4d6951",
+    "bsdrattn2": "#97c415",
+    "skipattn2": "#c8117e",
 }
 
 ARBITRARY_ALG_COLORS = ["#000000","#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf","#1a2b3c","#169ccb","#4d6951"]
