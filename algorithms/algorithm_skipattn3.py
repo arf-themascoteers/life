@@ -109,7 +109,7 @@ class ANN(nn.Module):
         return torch.sigmoid(self.indices)
 
 
-class Algorithm_skipattn2(Algorithm):
+class Algorithm_skipattn3(Algorithm):
     def __init__(self, target_size, dataset, tag, reporter, verbose, test, props):
         super().__init__(target_size, dataset, tag, reporter, verbose, test, props)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
