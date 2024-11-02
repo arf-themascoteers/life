@@ -29,7 +29,7 @@ FIXED_ALG_COLORS = {
     "linspacer": "#FF00FF",
     "random": "#d6ff28",
     "c1_wo_dsc": "#bcbd22",
-    "msobsdr": "#17becf",
+    "msobsdr": "#f7becf",
     "bsdr3": "#169ccb",
     "bsdr3ae": "#4d6951",
     "bsdrattn2": "#97c415",
