@@ -7,4 +7,4 @@ def plot(*args, **kwargs):
     plotter_regression.plot_combined(*args, **kwargs)
 
 
-plot(only_algorithms=["bsdrattn2","skipattn2"])
+plot(sources=["p1","p3","p5","p6","p8"],only_algorithms=["bsdr","c1","bsdrattn2"])

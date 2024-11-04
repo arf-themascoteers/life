@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 #for folder in os.listdir("../saved_results"):
-for folder in ["p8"]:
+for folder in ["m1"]:
     loc = os.path.join("../saved_results", folder)
     for f in os.listdir(loc):
         if ("all_features_details" in f) or ("all_features_summary" in f):
