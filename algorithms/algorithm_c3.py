@@ -5,6 +5,7 @@ from torch.utils.data import TensorDataset, DataLoader
 import numpy as np
 import math
 import train_test_evaluator
+import torch.nn.functional as F
 
 
 class Sparse(nn.Module):
@@ -185,17 +186,16 @@ class Algorithm_c3(Algorithm):
         return mean_weights, band_indx, band_indx[: self.target_size]
 
     def entropy(self, weights):
-        probs = weights / torch.sum(weights)
-        probs = -weights.sum(probs * weights.log(probs + 1e-10))
-        probs[probs < 0.00001] = 0
-        return torch.mean(probs)
+        probs = F.softmax(weights, dim=0)
+        return -torch.sum(probs * torch.log(probs + 1e-10)).mean()
 
     def get_lambda(self, l0_norm):
         l0_norm_threshold = 40
         if l0_norm <= l0_norm_threshold:
             return 0
-        m = 0.1
+        m = 0.01
         return m
+
 
 
 
