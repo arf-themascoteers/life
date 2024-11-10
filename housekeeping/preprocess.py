@@ -17,7 +17,7 @@ def is_regression( name):
 
 
 def is_special_classification( name):
-    return name in ["ghisaconus.csv"]
+    return name in ["ghisaconus.csv","ghisaconus_health.csv"]
 
 
 os.makedirs(output_folder, exist_ok=True)
