@@ -191,17 +191,9 @@ class Algorithm_c2(Algorithm):
         return s
 
     def get_lambda(self, l0_norm):
-        l0_norm_threshold = 40
-        if self.dataset == "indian_pines":
-            l0_norm_threshold = 50
-        if l0_norm <= l0_norm_threshold:
+        if l0_norm <= 40:
             return 0
-        m = 0.001
-        if self.dataset.get_name() == "salinas":
-            m = 0.08
-        elif self.dataset.get_name() == "indian_pines":
-            m = 0.01
-        return m
+        return 0.01
 
 
 
