@@ -195,7 +195,7 @@ class Algorithm_c2(Algorithm):
         l0_norm_threshold = 40
         if l0_norm <= l0_norm_threshold:
             return 0
-        m = 0.01
+        m = 0.001
         return m
 
 
