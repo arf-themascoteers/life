@@ -186,14 +186,16 @@ class Algorithm_c2(Algorithm):
 
     def s_loss(self, channel_weights):
         l1 =  torch.norm(channel_weights, p=1) / torch.numel(channel_weights)
-        l2 =  torch.norm(channel_weights, p=1) / torch.numel(channel_weights)
+        l2 =  torch.norm(channel_weights, p=2) / torch.numel(channel_weights)
         s = (l1/l2) - 1
         return s
 
     def get_lambda(self, l0_norm):
-        if l0_norm <= 40:
+        l0_norm_threshold = 40
+        if l0_norm <= l0_norm_threshold:
             return 0
-        return 0.01
+        m = 0.1
+        return m
 
 
 

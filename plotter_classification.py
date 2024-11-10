@@ -134,6 +134,7 @@ def plot_combined(sources=None,exclude=None,only_algorithms=None,only_datasets=N
     #fig.tight_layout()
     #fig.subplots_adjust(wspace=0.3, hspace=0.5, top=0.95, bottom=0.15)
     plt.savefig(dest, bbox_inches='tight', pad_inches=0.05)
+    plt.show()
     plt.close(fig)
 
 
