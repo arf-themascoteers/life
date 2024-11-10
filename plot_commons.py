@@ -1,6 +1,6 @@
 ALGS = {
     "bnc": "BS-Net-Classifier [9]",
-    "c1": "BS-DSC",
+    "c1": "DICTA-paper",
     "all": "All Bands",
     "mcuve": "MCUVE [17]",
     "bsnet": "BS-Net-FC [2]",
@@ -15,6 +15,7 @@ ALGS = {
     "bsdr3ae": "BSDR3-AE",
     "bsdrattn2": "BSDR-ATTN2",
     "skipattn2": "Skip-ATTN2",
+    "c2":"L1/L2"
 }
 
 FIXED_ALG_COLORS = {
