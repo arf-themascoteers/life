@@ -14,6 +14,7 @@ DSS = {
     "paviaU": "Pavia University",
     "salinas": "Salinas",
     "ghisaconus": "Ghisaconus",
+    "ghisaconus_health": "Ghisaconus"
 }
 
 def plot_algorithm(ax, algorithm, props, algorithm_index, metric, alg_df):
