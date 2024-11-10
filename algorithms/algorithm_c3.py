@@ -3,9 +3,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
 import numpy as np
-import math
 import train_test_evaluator
-import torch.nn.functional as F
 
 
 class Sparse(nn.Module):
@@ -70,6 +68,7 @@ class ZhangNet(nn.Module):
         channel_weights = self.weighter(X)
         channel_weights = torch.abs(channel_weights)
         channel_weights = torch.mean(channel_weights, dim=0)
+        channel_weights = torch.softmax(channel_weights, dim=0)
         sparse_weights = self.sparse(channel_weights, epoch, l0_norm)
         reweight_out = X * sparse_weights
         output = self.classnet(reweight_out)
@@ -186,8 +185,8 @@ class Algorithm_c3(Algorithm):
         return mean_weights, band_indx, band_indx[: self.target_size]
 
     def entropy(self, weights):
-        probs = F.softmax(weights, dim=0)
-        return -torch.sum(probs * torch.log(probs + 1e-10)).mean()
+        probs = -torch.sum(weights * torch.log(weights + 1e-10))
+        return torch.mean(probs)
 
     def get_lambda(self, l0_norm):
         l0_norm_threshold = 40
@@ -195,7 +194,6 @@ class Algorithm_c3(Algorithm):
             return 0
         m = 0.01
         return m
-
 
 
 
