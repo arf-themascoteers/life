@@ -76,7 +76,7 @@ class ZhangNet(nn.Module):
         return channel_weights, sparse_weights, output
 
 
-class Algorithm_c3(Algorithm):
+class Algorithm_c4(Algorithm):
     def __init__(self, target_size:int, dataset, tag, reporter, verbose, test, props):
         super().__init__(target_size, dataset, tag, reporter, verbose, test, props)
         if dataset.is_classification():
