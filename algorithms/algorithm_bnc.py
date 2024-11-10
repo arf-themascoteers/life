@@ -74,7 +74,7 @@ class Algorithm_bnc(Algorithm):
             self.last_layer_input = 48
         if self.dataset.name == "lucas_r":
             self.last_layer_input = 2100
-        if self.dataset.name == "ghisaconus":
+        if self.dataset.name == "ghisaconus" or self.dataset.name == "ghisaconus_health":
             self.last_layer_input = 64
         self.zhangnet = ZhangNet(self.dataset.get_bs_train_x().shape[1], self.class_size, self.last_layer_input).to(self.device)
         self.total_epoch = 500
