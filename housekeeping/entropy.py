@@ -1,14 +1,15 @@
-import numpy as np
+import torch
+import torch.nn.functional as F
 
 def entropy(values):
-    probs = values / np.sum(values)
-    return -np.sum(probs * np.log(probs + 1e-10))
+    probs = F.softmax(values, dim=0)
+    return -torch.sum(probs * torch.log(probs + 1e-10)).mean()
 
 arrays = [
-    np.array([1, 1, 1, 1]),
-    np.array([10, 1, 1, 1]),
-    np.array([100, 0, 0, 0]),
-    np.array([0.25, 0.25, 0.25, 0.25]),
+    torch.tensor([4, 0, 0, 0])*1.0,
+    torch.tensor([3, 1, 0, 0])*1.0,
+    torch.tensor([2, 1, 1, 0])*1.0,
+    torch.tensor([1, 1, 1, 1])*1.0,
 ]
 
 for i, arr in enumerate(arrays):
