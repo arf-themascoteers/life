@@ -5,9 +5,10 @@ from sklearn.metrics import r2_score, mean_squared_error
 import numpy as np
 from sklearn.svm import SVR
 
-data = pd.read_csv("../data_raw/lucas_r.csv")
+data = pd.read_csv("../data/lucas_r.csv")
 
-idx = [i for i in range(100,4100,10)]
+#idx = [i for i in range(100,4100,10)]
+idx = [i for i in range(0,4200)]
 
 X = data.iloc[:, idx]
 y = data.iloc[:, -1]
