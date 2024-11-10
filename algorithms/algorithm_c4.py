@@ -106,7 +106,7 @@ class Algorithm_c3(Algorithm):
         loss = 0
         l1_loss = 0
         mse_loss = 0
-        l0_norm = self.X_train.shape[1]
+        s_loss = self.X_train.shape[1]
         sparse_weights = None
         for epoch in range(self.total_epoch):
             self.epoch = epoch
@@ -129,11 +129,13 @@ class Algorithm_c3(Algorithm):
                     y = y.type(torch.LongTensor).to(self.device)
 
                 mse_loss = self.criterion(y_hat, y)
-                l1_loss = self.entropy(channel_weights)
-                lambda_value = self.get_lambda(l0_norm)
-                loss = mse_loss + lambda_value*l1_loss
+                s_loss = self.s_loss(channel_weights)
+                entropy_loss = self.entropy(channel_weights)
+                lambda_value1 = self.get_lambda1(l0_norm)
+                lambda_value2 = self.get_lambda2(l0_norm)
+                loss = mse_loss + (lambda_value1*s_loss) + (lambda_value2*entropy_loss)
                 if batch_idx == 0 and self.epoch%10 == 0:
-                    self.report_stats(channel_weights, sparse_weights, epoch, mse_loss, l1_loss.item(), lambda_value,loss)
+                    self.report_stats(channel_weights, sparse_weights, epoch, mse_loss, s_loss.item(), lambda_value1,loss)
                 loss.backward()
                 optimizer.step()
 
@@ -185,11 +187,25 @@ class Algorithm_c3(Algorithm):
         band_indx = (torch.argsort(corrected_weights, descending=True)).tolist()
         return mean_weights, band_indx, band_indx[: self.target_size]
 
+    def s_loss(self, channel_weights):
+        channel_weights = torch.softmax(channel_weights, dim=0)
+        l1 =  torch.norm(channel_weights, p=1) / torch.numel(channel_weights)
+        l2 =  torch.norm(channel_weights, p=2) / torch.numel(channel_weights)
+        s = (l1/l2) - 1
+        return s
+
     def entropy(self, weights):
         probs = F.softmax(weights, dim=0)
         return -torch.sum(probs * torch.log(probs + 1e-10)).mean()
 
-    def get_lambda(self, l0_norm):
+    def get_lambda1(self, l0_norm):
+        l0_norm_threshold = 40
+        if l0_norm <= l0_norm_threshold:
+            return 0
+        m = 0.01
+        return m
+
+    def get_lambda2(self, l0_norm):
         l0_norm_threshold = 40
         if l0_norm <= l0_norm_threshold:
             return 0
