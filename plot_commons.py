@@ -15,7 +15,8 @@ ALGS = {
     "bsdr3ae": "BSDR3-AE",
     "bsdrattn2": "BSDR-ATTN2",
     "skipattn2": "Skip-ATTN2",
-    "c2":"L1/L2"
+    "c2":"L1/L2",
+    "c3":"Entropy",
 }
 
 FIXED_ALG_COLORS = {
@@ -39,7 +40,7 @@ FIXED_ALG_COLORS = {
     "bsdr3ae3":"#1f77b4",
     "msobsdr3ae":"#d62728",
     "c2":"#FF00FF",
-    "c3":"#c8117e",
+    "c3":"#cccccc",
     "c4":"#FFFF00",
 }
 
