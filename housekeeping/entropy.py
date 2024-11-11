@@ -3,7 +3,11 @@ import torch.nn.functional as F
 
 def entropy(values):
     probs = F.softmax(values, dim=0)
-    return -torch.sum(probs * torch.log(probs + 1e-10)).mean()
+    print(probs)
+    logs = torch.log(probs + 1e-10)
+    print(logs)
+    sums = -torch.sum(probs * logs)
+    return sums
 
 arrays = [
     torch.tensor([4, 0, 0, 0])*1.0,
@@ -14,3 +18,5 @@ arrays = [
 
 for i, arr in enumerate(arrays):
     print(f"Array {i+1}: {arr}, Entropy: {entropy(arr):.4f}")
+    print("")
+    print("")

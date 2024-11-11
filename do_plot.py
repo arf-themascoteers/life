@@ -8,7 +8,7 @@ def plot(*args, **kwargs):
 
 
 plotter_classification.plot_combined(
-    sources=["p21","p22","p23"],
-    only_algorithms=["bsnet","bnc","c1","c2","c3"],
+    sources=["p21","p22","p23","p24"],
+    only_algorithms=["c2","c3","c4"],
     only_datasets=["ghisaconus_health"]
 )

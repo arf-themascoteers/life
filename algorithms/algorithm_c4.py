@@ -202,14 +202,14 @@ class Algorithm_c4(Algorithm):
         l0_norm_threshold = 50
         if l0_norm <= l0_norm_threshold:
             return 0
-        m = 0.01
+        m = 0.001
         return m
 
     def get_lambda_entropy(self, l0_norm):
         l0_norm_threshold = 50
         if l0_norm <= l0_norm_threshold:
             return 0
-        m = 0.005
+        m = 0.001
         return m
 
 
