@@ -2,4 +2,4 @@ early softmax
 
 Lambda: 0.001
 
-Result:
+Result: Good
