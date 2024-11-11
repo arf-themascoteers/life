@@ -68,7 +68,7 @@ def plot_metric(algorithms, propses, metric, metric_index, dataset_index, datase
         # legend = ax.legend(loc='upper left', fontsize=12, ncols=6,
         #                    bbox_to_anchor=(0, 1.35),
         #                    columnspacing=3.8, frameon=True)
-        legend = ax.legend(loc='upper left', ncols=5,bbox_to_anchor=(0, 1.3))
+        legend = ax.legend(loc='upper left', ncols=5,bbox_to_anchor=(0, 1.12),fontsize=18)
         legend.get_title().set_fontsize('12')
         legend.get_title().set_fontweight('bold')
 
