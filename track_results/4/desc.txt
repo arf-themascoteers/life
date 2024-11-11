@@ -1,4 +1,4 @@
 Not early softmax
 
-Lambda 1: 0.01
+Lambda: 0.01
 
