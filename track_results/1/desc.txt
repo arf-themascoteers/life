@@ -1,0 +1,3 @@
+Not early softmax
+
+Lambda same as C1: 0.001
