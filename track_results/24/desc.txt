@@ -1,0 +1,6 @@
+Not early softmax
+
+Lambda L1/L2: 0.001
+Lambda Entropy: 0.005
+
+Result:
