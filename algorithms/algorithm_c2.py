@@ -69,7 +69,6 @@ class ZhangNet(nn.Module):
         channel_weights = self.weighter(X)
         channel_weights = torch.abs(channel_weights)
         channel_weights = torch.mean(channel_weights, dim=0)
-        channel_weights = torch.softmax(channel_weights, dim=0)
         sparse_weights = self.sparse(channel_weights, epoch, l0_norm)
         reweight_out = X * sparse_weights
         output = self.classnet(reweight_out)
@@ -195,7 +194,7 @@ class Algorithm_c2(Algorithm):
         l0_norm_threshold = 50
         if l0_norm <= l0_norm_threshold:
             return 0
-        m = 0.001
+        m = 0.01
         return m
 
 
