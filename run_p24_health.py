@@ -12,4 +12,4 @@ if __name__ == '__main__':
     }
     ev = TaskRunner(tasks,tag,skip_all_bands=True, verbose=True, test=False)
     summary, details = ev.evaluate()
-    plotter_classification.plot_combined(sources=["p21","p24"],only_algorithms=["bsnet","bnc","c1","c4"], only_datasets=["ghisaconus_health"])
+    plotter_classification.plot_combined(sources=["p22","p23","p24"],only_algorithms=["c2","c3","c4"], only_datasets=["ghisaconus_health"])
