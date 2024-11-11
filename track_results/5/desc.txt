@@ -2,4 +2,4 @@ Not early softmax
 
 Lambda: 0.01
 
-Result:
+Result: Good
