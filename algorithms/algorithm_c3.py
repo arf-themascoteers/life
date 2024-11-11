@@ -192,7 +192,7 @@ class Algorithm_c3(Algorithm):
         l0_norm_threshold = 50
         if l0_norm <= l0_norm_threshold:
             return 0
-        m = 0.01
+        m = 0.005
         return m
 
 
