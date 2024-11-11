@@ -68,7 +68,6 @@ class ZhangNet(nn.Module):
         channel_weights = self.weighter(X)
         channel_weights = torch.abs(channel_weights)
         channel_weights = torch.mean(channel_weights, dim=0)
-        channel_weights = torch.softmax(channel_weights, dim=0)
         sparse_weights = self.sparse(channel_weights, epoch, l0_norm)
         reweight_out = X * sparse_weights
         output = self.classnet(reweight_out)
@@ -195,6 +194,7 @@ class Algorithm_c4(Algorithm):
         return s
 
     def entropy(self, weights):
+        weights = torch.softmax(weights, dim=0)
         probs = -torch.sum(weights * torch.log(weights + 1e-10))
         return probs
 
@@ -202,14 +202,14 @@ class Algorithm_c4(Algorithm):
         l0_norm_threshold = 50
         if l0_norm <= l0_norm_threshold:
             return 0
-        m = 0.001
+        m = 0.01
         return m
 
     def get_lambda_entropy(self, l0_norm):
         l0_norm_threshold = 50
         if l0_norm <= l0_norm_threshold:
             return 0
-        m = 0.01
+        m = 0.005
         return m
 
 
