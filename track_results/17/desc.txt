@@ -1,0 +1,5 @@
+early softmax
+
+Lambda: 0.01
+
+Result:
