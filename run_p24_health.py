@@ -8,7 +8,7 @@ if __name__ == '__main__':
     tasks = {
         "algorithms" : ["c4"],
         "datasets": ["ghisaconus_health"],
-        "target_sizes" : list(range(30,1))
+        "target_sizes" : list(range(30,1,-1))
     }
     ev = TaskRunner(tasks,tag,skip_all_bands=True, verbose=True, test=False)
     summary, details = ev.evaluate()
