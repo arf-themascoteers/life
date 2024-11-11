@@ -3,9 +3,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import TensorDataset, DataLoader
 import numpy as np
-import math
 import train_test_evaluator
-import torch.nn.functional as F
 
 
 class Sparse(nn.Module):
@@ -70,6 +68,7 @@ class ZhangNet(nn.Module):
         channel_weights = self.weighter(X)
         channel_weights = torch.abs(channel_weights)
         channel_weights = torch.mean(channel_weights, dim=0)
+        channel_weights = torch.softmax(channel_weights, dim=0)
         sparse_weights = self.sparse(channel_weights, epoch, l0_norm)
         reweight_out = X * sparse_weights
         output = self.classnet(reweight_out)
@@ -106,7 +105,7 @@ class Algorithm_c4(Algorithm):
         loss = 0
         l1_loss = 0
         mse_loss = 0
-        s_loss = self.X_train.shape[1]
+        l0_norm = self.X_train.shape[1]
         sparse_weights = None
         for epoch in range(self.total_epoch):
             self.epoch = epoch
@@ -131,11 +130,12 @@ class Algorithm_c4(Algorithm):
                 mse_loss = self.criterion(y_hat, y)
                 s_loss = self.s_loss(channel_weights)
                 entropy_loss = self.entropy(channel_weights)
-                lambda_value1 = self.get_lambda1(l0_norm)
-                lambda_value2 = self.get_lambda2(l0_norm)
-                loss = mse_loss + (lambda_value1*s_loss) + (lambda_value2*entropy_loss)
+                lambda_s = self.get_lambda_s(l0_norm)
+                lambda_e = self.get_lambda_entropy(l0_norm)
+                loss = mse_loss + (lambda_s*s_loss) + (lambda_e*entropy_loss)
                 if batch_idx == 0 and self.epoch%10 == 0:
-                    self.report_stats(channel_weights, sparse_weights, epoch, mse_loss, s_loss.item(), lambda_value1,loss)
+                    self.report_stats(channel_weights, sparse_weights, epoch,
+                                      mse_loss, s_loss.item(), lambda_s, entropy_loss.item(), lambda_e, loss)
                 loss.backward()
                 optimizer.step()
 
@@ -143,7 +143,8 @@ class Algorithm_c4(Algorithm):
         print("".join([str(i).ljust(10) for i in self.selected_indices]))
         return self.zhangnet, self.selected_indices
 
-    def report_stats(self, channel_weights, sparse_weights, epoch, mse_loss, l1_loss, lambda1, loss):
+    def report_stats(self, channel_weights, sparse_weights, epoch,
+                     mse_loss, s_loss, lambda_s, entropy_loss, lambda_e, loss):
         mean_weight = channel_weights
         means_sparse = sparse_weights
 
@@ -168,7 +169,7 @@ class Algorithm_c4(Algorithm):
         if self.verbose:
             oa, aa, k = train_test_evaluator.evaluate_split(*self.dataset.get_a_fold(), self)
 
-        self.reporter.report_epoch(epoch, mse_loss, l1_loss, lambda1,loss,
+        self.reporter.report_epoch_c4(epoch, mse_loss, s_loss, lambda_s, entropy_loss, lambda_e, loss,
                                oa, aa, k,
                                min_cw, max_cw, avg_cw,
                                min_s, max_s, avg_s,
@@ -188,30 +189,28 @@ class Algorithm_c4(Algorithm):
         return mean_weights, band_indx, band_indx[: self.target_size]
 
     def s_loss(self, channel_weights):
-        channel_weights = torch.softmax(channel_weights, dim=0)
-        l1 =  torch.norm(channel_weights, p=1) / torch.numel(channel_weights)
-        l2 =  torch.norm(channel_weights, p=2) / torch.numel(channel_weights)
-        s = (l1/l2) - 1
+        l1 = torch.norm(channel_weights, p=1) / torch.numel(channel_weights)
+        l2 = torch.norm(channel_weights, p=2) / torch.numel(channel_weights)
+        s = (l1 / l2) - 1
         return s
 
     def entropy(self, weights):
-        probs = F.softmax(weights, dim=0)
-        return -torch.sum(probs * torch.log(probs + 1e-10)).mean()
+        probs = -torch.sum(weights * torch.log(weights + 1e-10))
+        return probs
 
-    def get_lambda1(self, l0_norm):
-        l0_norm_threshold = 40
+    def get_lambda_s(self, l0_norm):
+        l0_norm_threshold = 50
+        if l0_norm <= l0_norm_threshold:
+            return 0
+        m = 0.001
+        return m
+
+    def get_lambda_entropy(self, l0_norm):
+        l0_norm_threshold = 50
         if l0_norm <= l0_norm_threshold:
             return 0
         m = 0.01
         return m
-
-    def get_lambda2(self, l0_norm):
-        l0_norm_threshold = 40
-        if l0_norm <= l0_norm_threshold:
-            return 0
-        m = 0.01
-        return m
-
 
 
 

@@ -186,6 +186,43 @@ class Reporter:
                        f"{Reporter.sanitize_weight(min_s)},{Reporter.sanitize_weight(max_s)},{Reporter.sanitize_weight(avg_s)},"
                        f"{selected_bands_str},{selected_weights_str},{weights}\n")
 
+    def report_epoch_c4(self, epoch, mse_loss, s_loss, lambda_s, entropy_loss, lambda_e, loss,
+                     oa,aa,k,
+                     min_cw, max_cw, avg_cw,
+                     min_s, max_s, avg_s,
+                     l0_cw, l0_s,
+                     selected_bands, mean_weight):
+        if not os.path.exists(self.current_epoch_report_file):
+            with open(self.current_epoch_report_file, 'w') as file:
+                weight_labels = list(range(len(mean_weight)))
+                weight_labels = [f"weight_{i}" for i in weight_labels]
+                weight_labels = ",".join(weight_labels)
+                file.write(f"epoch,"
+                           f"l0_cw,l0_s,"
+                           f"mse_loss,s_loss,lambda_s,entropy_loss,lambda_e,loss,"
+                           f"oa,aa,k,"
+                           f"min_cw,max_cw,avg_cw,"
+                           f"min_s,max_s,avg_s,"
+                           f"selected_bands,selected_weights,{weight_labels}\n")
+        with open(self.current_epoch_report_file, 'a') as file:
+            weights = [str(Reporter.sanitize_weight(i.item())) for i in mean_weight]
+            weights = ",".join(weights)
+            selected_bands_str = '|'.join([str(i) for i in selected_bands])
+
+            selected_weights = [str(Reporter.sanitize_weight(i.item())) for i in mean_weight[selected_bands]]
+            selected_weights_str = '|'.join(selected_weights)
+
+            file.write(f"{epoch},"
+                       f"{int(l0_cw)},{int(l0_s)},"
+                       f"{Reporter.sanitize_metric(mse_loss)},"
+                       f"{Reporter.sanitize_small(s_loss)},{Reporter.sanitize_small(lambda_s)},"
+                       f"{Reporter.sanitize_small(entropy_loss)},{Reporter.sanitize_small(lambda_e)},"
+                       f"{Reporter.sanitize_metric(loss)},"
+                       f"{Reporter.sanitize_metric(oa)},{Reporter.sanitize_metric(aa)},{Reporter.sanitize_metric(k)},"
+                       f"{Reporter.sanitize_weight(min_cw)},{Reporter.sanitize_weight(max_cw)},{Reporter.sanitize_weight(avg_cw)},"
+                       f"{Reporter.sanitize_weight(min_s)},{Reporter.sanitize_weight(max_s)},{Reporter.sanitize_weight(avg_s)},"
+                       f"{selected_bands_str},{selected_weights_str},{weights}\n")
+
     def report_epoch_bsdr(self, epoch, mse_loss,oa,aa,k,selected_bands):
         if not os.path.exists(self.current_epoch_report_file):
             with open(self.current_epoch_report_file, 'w') as file:

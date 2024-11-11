@@ -17,6 +17,7 @@ ALGS = {
     "skipattn2": "Skip-ATTN2",
     "c2":"L1/L2",
     "c3":"Entropy",
+    "c3":"L1/L2+Entropy",
 }
 
 FIXED_ALG_COLORS = {
