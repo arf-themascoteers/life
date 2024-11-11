@@ -185,7 +185,6 @@ class Algorithm_c2(Algorithm):
         return mean_weights, band_indx, band_indx[: self.target_size]
 
     def s_loss(self, channel_weights):
-        channel_weights = torch.softmax(channel_weights, dim=0)
         l1 =  torch.norm(channel_weights, p=1) / torch.numel(channel_weights)
         l2 =  torch.norm(channel_weights, p=2) / torch.numel(channel_weights)
         s = (l1/l2) - 1
