@@ -40,7 +40,7 @@ FIXED_ALG_COLORS = {
     "bsdr3ae3":"#1f77b4",
     "msobsdr3ae":"#d62728",
     "c2":"#FF00FF",
-    "c3":"#cccccc",
+    "c3":"#00ffff",
     "c4":"#FFFF00",
 }
 
