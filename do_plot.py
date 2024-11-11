@@ -9,6 +9,6 @@ def plot(*args, **kwargs):
 
 plotter_classification.plot_combined(
     sources=["p21","p22","p23"],
-    only_algorithms=["bsnet","bnc","c1","c3"],
+    only_algorithms=["bsnet","bnc","c1","c2","c3"],
     only_datasets=["ghisaconus_health"]
 )
